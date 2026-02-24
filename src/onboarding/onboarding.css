@@ -1,0 +1,479 @@
+/* Onboarding — DM Sans + Matter, centered layout, clear contrast */
+
+.onboarding-page {
+  --font-heading: 'Matter', 'Outfit', 'DM Sans', system-ui, sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --color-bg: #f0f0f0;
+  --color-surface: #ffffff;
+  --color-text: #0a0a0a;
+  --color-text-muted: #525252;
+  --color-accent: #7c3aed;
+  --color-accent-soft: #ede9fe;
+  --color-border: #d4d4d4;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+  min-height: 100vh;
+  font-family: var(--font-body);
+  background: var(--color-bg);
+  padding: clamp(1rem, 4vw, 2rem);
+  box-sizing: border-box;
+}
+
+.onboarding-page .onboarding-container {
+  max-width: 520px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.onboarding-page .progress-bar {
+  height: 4px;
+  background: var(--color-border);
+  border-radius: 2px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.onboarding-page .progress-fill {
+  height: 100%;
+  background: var(--color-accent);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.onboarding-page .step-label {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.onboarding-page h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 0.5rem;
+  text-align: center;
+}
+
+.onboarding-page .subtitle {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  margin: 0 0 1.5rem;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Role select + Hire: full-width cards */
+.onboarding-page .card-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1.25rem 1.5rem;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  text-align: left;
+  margin-bottom: 0.75rem;
+  box-shadow: var(--shadow);
+}
+
+.onboarding-page .card-option:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-card);
+}
+
+.onboarding-page .card-option.selected {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.25);
+}
+
+.onboarding-page .card-option .card-content h3 {
+  font-family: var(--font-heading);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+  color: var(--color-text);
+}
+
+.onboarding-page .card-option .card-content p {
+  font-size: 0.9375rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.onboarding-page .card-option .card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Professional type: grid of chips */
+.onboarding-page .option-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.75rem;
+  width: 100%;
+  justify-items: stretch;
+}
+
+.onboarding-page .option-chip {
+  padding: 1rem;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.onboarding-page .option-chip:hover {
+  border-color: var(--color-accent);
+  background: #faf5ff;
+}
+
+.onboarding-page .option-chip.selected {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+}
+
+.onboarding-page .btn-continue {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  margin: 1.5rem auto 0;
+  padding: 1rem 1.5rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--color-accent);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.onboarding-page .btn-continue:hover:not(:disabled) {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+.onboarding-page .btn-continue:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.onboarding-page .form-group {
+  margin-bottom: 1.25rem;
+}
+
+.onboarding-page .form-group label {
+  display: block;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+}
+
+.onboarding-page .form-group input,
+.onboarding-page .form-group textarea,
+.onboarding-page .form-group select {
+  width: 100%;
+  max-width: 100%;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-sizing: border-box;
+}
+
+.onboarding-page .form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.onboarding-page .form-group input:focus,
+.onboarding-page .form-group textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent-soft);
+}
+
+.onboarding-page .input-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.onboarding-page .input-row .country-select {
+  width: 100px;
+  flex-shrink: 0;
+}
+
+.onboarding-page .input-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.onboarding-page .nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.onboarding-page .btn-back,
+.onboarding-page .btn-skip {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.onboarding-page .btn-back:hover,
+.onboarding-page .btn-skip:hover {
+  color: var(--color-accent);
+}
+
+.onboarding-page .review-block {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow);
+}
+
+.onboarding-page .review-block h4 {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.5rem;
+}
+
+.onboarding-page .review-block p {
+  font-size: 0.9375rem;
+  color: var(--color-text);
+  margin: 0;
+}
+
+/* Avatar: single state - no duplicate badge when image present */
+.onboarding-page .avatar-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.onboarding-page .avatar-upload {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: var(--color-bg);
+  border: 2px dashed var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.onboarding-page .avatar-upload:hover {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+.onboarding-page .avatar-upload img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.onboarding-page .avatar-upload .avatar-placeholder {
+  color: var(--color-text-muted);
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.onboarding-page .avatar-upload.has-image .avatar-edit {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.onboarding-page .avatar-upload.has-image:hover .avatar-edit {
+  opacity: 1;
+}
+
+/* Services: multi-select chips + Other text */
+.onboarding-page .services-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.onboarding-page .service-chip {
+  padding: 0.5rem 1rem;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.onboarding-page .service-chip:hover {
+  border-color: var(--color-accent);
+}
+
+.onboarding-page .service-chip.selected {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.onboarding-page .other-service-input {
+  margin-top: 0.75rem;
+}
+
+/* Availability: card layout */
+.onboarding-page .availability-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow);
+}
+
+.onboarding-page .availability-card .availability-title {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+  color: var(--color-text);
+}
+
+.onboarding-page .toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-border);
+  gap: 1rem;
+}
+
+.onboarding-page .toggle-row:last-child {
+  border-bottom: none;
+}
+
+.onboarding-page .toggle-row .day-label {
+  text-transform: capitalize;
+  font-weight: 500;
+  color: var(--color-text);
+  min-width: 100px;
+}
+
+.onboarding-page .toggle-switch {
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+  background: var(--color-border);
+  border-radius: 12px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.onboarding-page .toggle-switch.active {
+  background: var(--color-accent);
+}
+
+.onboarding-page .toggle-switch::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  top: 2px;
+  left: 2px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+}
+
+.onboarding-page .toggle-switch.active::after {
+  transform: translateX(20px);
+}
+
+.onboarding-page .time-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.onboarding-page .time-inputs input {
+  max-width: 110px;
+  padding: 0.5rem;
+}
+
+.onboarding-page .char-count {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+}
+
+.onboarding-page .field-hint {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+}
+
+.onboarding-page .field-error {
+  font-size: 0.875rem;
+  color: #dc2626;
+  margin-top: 0.25rem;
+}
