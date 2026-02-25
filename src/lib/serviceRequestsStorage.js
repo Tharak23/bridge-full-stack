@@ -70,4 +70,17 @@ export function assignProvider(requestId, providerId, providerName) {
   return list.find((r) => r.id === requestId)
 }
 
+export function updateRequest(id, updates) {
+  const list = getRequests().map((r) => {
+    if (r.id !== id) return r
+    return {
+      ...r,
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    }
+  })
+  saveRequests(list)
+  return list.find((r) => r.id === id)
+}
+
 export { getRequests }

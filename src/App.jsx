@@ -19,6 +19,7 @@ import BookingSuccessPage from './pages/hire/BookingSuccessPage'
 import BookingsPage from './pages/hire/BookingsPage'
 import BookingDetailPage from './pages/hire/BookingDetailPage'
 import BookingChangePage from './pages/hire/BookingChangePage'
+import EditRequestPage from './pages/hire/EditRequestPage'
 import MessagesPage from './pages/hire/MessagesPage'
 import PaymentsPage from './pages/hire/PaymentsPage'
 import HireProfile from './pages/hire/HireProfile'
@@ -30,6 +31,12 @@ import MyJobs from './pages/provider/MyJobs'
 import Earnings from './pages/provider/Earnings'
 import ProviderMessages from './pages/provider/ProviderMessages'
 import ProfileSettings from './pages/provider/ProfileSettings'
+import AdminLayout from './layouts/AdminLayout'
+import AdminAnalytics from './pages/admin/AdminAnalytics'
+import AdminMessages from './pages/admin/AdminMessages'
+import SupportLayout from './layouts/SupportLayout'
+import SupportTickets from './pages/support/SupportTickets'
+import SupportChat from './pages/support/SupportChat'
 import './App.css'
 
 function ProtectedRoute({ children }) {
@@ -79,6 +86,15 @@ export default function App() {
         <Route path="payments" element={<PaymentsPage />} />
         <Route path="profile" element={<HireProfile />} />
         <Route path="terms" element={<TermsPage />} />
+        <Route path="requests/:id/edit" element={<EditRequestPage />} />
+      </Route>
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<AdminAnalytics />} />
+        <Route path="messages" element={<AdminMessages />} />
+      </Route>
+      <Route path="/support" element={<SupportLayout />}>
+        <Route index element={<SupportTickets />} />
+        <Route path="chat" element={<SupportChat />} />
       </Route>
       <Route
         path="/dashboard"

@@ -7,6 +7,8 @@ export const DUMMY_CATEGORIES = [
   { id: 'cleaning_pest', name: 'Cleaning & Pest', slug: 'cleaning_pest', icon: 'sparkles' },
   { id: 'salon_spa', name: 'Salon & Spa', slug: 'salon_spa', icon: 'scissors' },
   { id: 'electronics', name: 'Electronics', slug: 'electronics', icon: 'tv' },
+  { id: 'tutoring', name: 'Tutoring', slug: 'tutoring', icon: 'book-open' },
+  { id: 'professional_works', name: 'Other professional works', slug: 'professional_works', icon: 'briefcase' },
   { id: 'other', name: 'Other', slug: 'other', icon: 'more-horizontal' },
 ]
 
@@ -40,6 +42,16 @@ export const CATEGORY_BLOG = {
     title: 'Salon & Spa at home',
     intro: 'Haircut, styling, massage, and spa services at your convenience. Skilled professionals at your door.',
     imagePlaceholder: 'Salon & Spa',
+  },
+  tutoring: {
+    title: 'Tutoring near you',
+    intro: 'Find qualified tutors for academics, languages, music, and more. One-on-one or small group sessions at your preferred time.',
+    imagePlaceholder: 'Tutoring',
+  },
+  professional_works: {
+    title: 'Other professional works near you',
+    intro: 'Consulting, design, writing, legal, accounting, and other professional services. Connect with verified experts.',
+    imagePlaceholder: 'Professional',
   },
   other: {
     title: 'Other services near you',
@@ -76,6 +88,16 @@ export const SERVICE_OPTIONS = {
     { slug: 'haircut', name: 'Haircut at home', price: 199, rating: 4.74, reviews: 15000 },
     { slug: 'massage', name: 'Massage & spa', price: 599, rating: 4.82, reviews: 8000 },
   ],
+  tutoring: [
+    { slug: 'academics', name: 'Academic tutoring', price: 299, rating: 4.8, reviews: 12000 },
+    { slug: 'languages', name: 'Language classes', price: 349, rating: 4.76, reviews: 8000 },
+    { slug: 'music', name: 'Music lessons', price: 399, rating: 4.79, reviews: 6000 },
+  ],
+  professional_works: [
+    { slug: 'consulting', name: 'Consulting', price: 499, rating: 4.78, reviews: 5000 },
+    { slug: 'design', name: 'Design & creative', price: 449, rating: 4.75, reviews: 7000 },
+    { slug: 'legal-accounting', name: 'Legal & accounting', price: 599, rating: 4.82, reviews: 4000 },
+  ],
   other: [
     { slug: 'other', name: 'Other service', price: 199, rating: 4.7, reviews: 5000 },
   ],
@@ -106,6 +128,8 @@ export const POPULAR_PROFESSIONALS = [
   { name: 'Priya M.', category: 'AC & Appliances', slug: 'ac_appliances', rating: 4.79 },
   { name: 'Vikram S.', category: 'Electronics', slug: 'electronics', rating: 4.82 },
   { name: 'Anita R.', category: 'Cleaning & Pest', slug: 'cleaning_pest', rating: 4.81 },
+  { name: 'Dr. Meera N.', category: 'Tutoring', slug: 'tutoring', rating: 4.88 },
+  { name: 'Arun L.', category: 'Other professional works', slug: 'professional_works', rating: 4.79 },
 ]
 
 export const HOW_IT_WORKS = [

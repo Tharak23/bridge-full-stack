@@ -39,7 +39,7 @@ const navLinks = [
 const pillars = [
   {
     icon: <Home className="pillar-icon" />,
-    title: 'Expert at your doorstep',
+    title: 'Professionals at your doorstep',
     text: 'Skilled professionals for home, appliances, and repairs—book in a few taps.',
   },
   {
@@ -203,7 +203,7 @@ export default function Landing() {
             >
               Home services at your doorstep
             </motion.div>
-            <h1 className="hero-title">Expert home & appliance services, one tap away</h1>
+            <h1 className="hero-title">Professional home & appliance services, one tap away</h1>
             <p className="hero-subtitle">
               From plumbing and electricals to AC repair, cleaning, and salon—book verified professionals at your convenience.
             </p>
@@ -447,6 +447,11 @@ export default function Landing() {
         </div>
         <div className="footer-bottom">
           <p>© {new Date().getFullYear()} Bridge. All rights reserved.</p>
+          <div className="footer-staff-links">
+            <Link to="/admin" className="footer-staff-link">Admin</Link>
+            <span className="footer-staff-sep">·</span>
+            <Link to="/support" className="footer-staff-link">Support</Link>
+          </div>
           {backendOk !== null && (
             <span
               className={`backend-dot ${backendOk ? 'online' : 'offline'}`}

@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { getBookings } from '@/lib/bookingsStorage'
 import { getRequests, assignProvider } from '@/lib/serviceRequestsStorage'
-import { Calendar, ChevronRight, User, CheckCircle } from 'lucide-react'
+import { Calendar, ChevronRight, User, CheckCircle, Pencil } from 'lucide-react'
 
 const DUMMY_APPLICANTS = [
   { providerId: 'pro-1', providerName: 'Ajay K.', message: 'I can help with this. 5+ years experience.', rating: 4.9 },
@@ -151,9 +151,17 @@ export default function BookingsPage() {
                 <div className="p-5">
                   <div className="flex flex-wrap items-center gap-2 mb-2">
                     <span className="font-bold text-slate-900">{req.description || 'Custom request'}</span>
-                    <span className="text-xs text-slate-500 capitalize bg-slate-100 px-2 py-0.5 rounded">{req.category}</span>
+                    <span className="text-xs text-slate-500 capitalize bg-slate-100 px-2 py-0.5 rounded">{req.category.replace(/_/g, ' ')}</span>
                     {req.status === 'assigned' && (
                       <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">Assigned</span>
+                    )}
+                    {req.status === 'open' && (
+                      <Link
+                        to={`/hiredashboard/requests/${req.id}/edit`}
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-600 hover:text-teal-700 ml-auto"
+                      >
+                        <Pencil className="h-3.5 w-3.5" /> Edit
+                      </Link>
                     )}
                   </div>
                   <p className="text-sm text-slate-500 mb-3">

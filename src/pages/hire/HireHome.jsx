@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Wrench, Zap, Wind, Sparkles, Scissors, Tv, MoreHorizontal, Send } from 'lucide-react'
+import { Wrench, Zap, Wind, Sparkles, Scissors, Tv, BookOpen, Briefcase, MoreHorizontal, Send } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -15,6 +15,8 @@ const iconMap = {
   sparkles: Sparkles,
   scissors: Scissors,
   tv: Tv,
+  'book-open': BookOpen,
+  briefcase: Briefcase,
   'more-horizontal': MoreHorizontal,
 }
 
@@ -25,6 +27,8 @@ const categoryColors = [
   'bg-amber-500',
   'bg-rose-500',
   'bg-sky-500',
+  'bg-violet-500',
+  'bg-indigo-500',
   'bg-slate-600',
 ]
 
@@ -34,6 +38,9 @@ const CATEGORY_OPTIONS = [
   { value: 'ac_appliances', label: 'AC & Appliances' },
   { value: 'electronics', label: 'Electronics' },
   { value: 'cleaning_pest', label: 'Cleaning & Pest' },
+  { value: 'salon_spa', label: 'Salon & Spa' },
+  { value: 'tutoring', label: 'Tutoring' },
+  { value: 'professional_works', label: 'Other professional works' },
   { value: 'other', label: 'Other' },
 ]
 
@@ -72,7 +79,7 @@ export default function HireHome() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            Scale your home with <em className="italic text-teal-200">trusted professionals</em>
+            Scale your work with <em className="italic text-teal-200">trusted professionals</em>
           </motion.h1>
           <motion.p
             className="text-teal-100 text-lg md:text-xl max-w-xl mx-auto"
@@ -80,7 +87,7 @@ export default function HireHome() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            Book vetted experts for plumbing, electrical, appliances, cleaning, and more.
+            Book vetted professionals for plumbing, electrical, appliances, cleaning, tutoring, and other professional work.
           </motion.p>
         </div>
       </section>
@@ -88,7 +95,7 @@ export default function HireHome() {
       <section className="container mx-auto px-4 py-12 md:py-14">
         <h2 className="text-2xl font-bold text-slate-900 mb-1">Service categories</h2>
         <p className="text-slate-500 mb-8">Choose a category to browse services</p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4 md:gap-5">
           {categories.map((cat, i) => {
             const Icon = iconMap[cat.icon] || Wrench
             const colorClass = categoryColors[i % categoryColors.length]
@@ -162,8 +169,8 @@ export default function HireHome() {
 
       <section className="container mx-auto px-4 py-12 md:py-14 border-t border-slate-200 bg-white">
         <h2 className="text-2xl font-bold text-slate-900 mb-1">Popular professionals</h2>
-        <p className="text-slate-500 mb-8">Trusted experts by category</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <p className="text-slate-500 mb-8">Trusted professionals by category</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {POPULAR_PROFESSIONALS.map(({ name, category, slug, rating }) => (
             <Link key={name} to={`/hiredashboard/services/${slug}`} className="block min-h-[120px]">
               <Card hover className="h-full min-h-[120px] flex">
@@ -182,18 +189,18 @@ export default function HireHome() {
         <h2 className="text-2xl font-bold text-slate-900 mb-1">Request custom work</h2>
         <p className="text-slate-500 mb-6">Describe the work you need. Professionals can apply and you choose who to assign.</p>
         {requestSent && (
-          <div className="mb-4 p-4 rounded-xl bg-emerald-50 text-emerald-800 text-sm font-medium">
+          <div className="mb-4 p-4 rounded-xl bg-emerald-50 text-emerald-800 text-sm font-medium border border-emerald-200">
             Request submitted. View it in My Bookings → Services requested.
           </div>
         )}
-        <Card className="overflow-hidden max-w-2xl">
-          <form onSubmit={handleSubmitRequest} className="p-6 space-y-4">
+        <Card className="overflow-hidden max-w-2xl border border-slate-200/80 shadow-sm">
+          <form onSubmit={handleSubmitRequest} className="p-6 md:p-8 space-y-5">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Category</label>
               <select
                 value={requestCategory}
                 onChange={(e) => setRequestCategory(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-slate-900"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-colors"
               >
                 {CATEGORY_OPTIONS.map((o) => (
                   <option key={o.value} value={o.value}>{o.label}</option>
@@ -201,28 +208,30 @@ export default function HireHome() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">What do you need?</label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">What do you need?</label>
               <textarea
                 value={requestDesc}
                 onChange={(e) => setRequestDesc(e.target.value)}
                 placeholder="Describe the work..."
                 rows={3}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-slate-900 placeholder:text-slate-400"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-colors resize-none"
               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Preferred date</label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Preferred date</label>
                 <Input type="date" value={requestDate} onChange={(e) => setRequestDate(e.target.value)} className="w-full" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Budget (₹)</label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Budget (₹)</label>
                 <Input type="number" placeholder="Optional" value={requestBudget} onChange={(e) => setRequestBudget(e.target.value)} min={0} className="w-full" />
               </div>
             </div>
-            <Button type="submit" className="gap-2">
-              <Send className="h-4 w-4" /> Submit request
-            </Button>
+            <div className="pt-1">
+              <Button type="submit" className="gap-2 w-full sm:w-auto">
+                <Send className="h-4 w-4" /> Submit request
+              </Button>
+            </div>
           </form>
         </Card>
       </section>
