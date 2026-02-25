@@ -11,7 +11,11 @@ export function useOnboardStatus() {
     let cancelled = false
     getToken()
       .then((token) => {
-        if (!token || cancelled) return
+        if (cancelled) return
+        if (!token) {
+          setStatus({ loading: false, onboarded: false, role: null })
+          return
+        }
         return fetchApiJson('/api/users/me', {}, getToken)
       })
       .then((data) => {

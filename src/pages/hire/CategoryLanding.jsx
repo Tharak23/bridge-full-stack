@@ -31,8 +31,12 @@ export default function CategoryLanding() {
           <div className="flex-1">
             <p className="text-slate-600 text-lg leading-relaxed">{blog.intro}</p>
           </div>
-          <div className="w-full md:w-80 h-48 rounded-xl bg-slate-200 flex items-center justify-center text-slate-500 font-medium shrink-0">
-            {blog.imagePlaceholder}
+          <div className="w-full md:w-80 h-48 rounded-xl overflow-hidden bg-slate-200 shrink-0">
+            <img
+              src={`https://picsum.photos/seed/${category}/320/192`}
+              alt=""
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
       </section>

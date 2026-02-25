@@ -2,15 +2,36 @@ import { useParams, Link, useNavigate, useLocation } from 'react-router-dom'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { getBookingById, updateBookingStatus } from '@/lib/bookingsStorage'
-import { Calendar, Clock, IndianRupee, MapPin, User, XCircle } from 'lucide-react'
+import { addPayment, getPaymentsByBookingId, updatePaymentStatusByBookingId } from '@/lib/paymentsStorage'
+import { useToast } from '@/context/ToastContext'
+import { Calendar, Clock, IndianRupee, MapPin, User, XCircle, CheckCircle } from 'lucide-react'
 
 export default function BookingDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
+  const toast = useToast()
   const booking = (id ? getBookingById(id) : null) || location.state?.booking
 
   const isLocalBooking = id ? !!getBookingById(id) : false
+  const handleMarkCompleted = () => {
+    if (!booking || !isLocalBooking) return
+    updateBookingStatus(booking.id, 'completed')
+    const existing = getPaymentsByBookingId(booking.id)
+    if (existing.length) {
+      updatePaymentStatusByBookingId(booking.id, 'Paid')
+    } else {
+      addPayment({
+        bookingId: booking.id,
+        serviceName: booking.serviceName,
+        location: booking.locationText,
+        amount: booking.total ?? booking.price,
+        status: 'Paid',
+      })
+    }
+    toast.success('Booking marked as completed.')
+    navigate(0)
+  }
   const handleCancel = () => {
     if (!booking) return
     if (!isLocalBooking) {
@@ -49,7 +70,7 @@ export default function BookingDetailPage() {
 
       <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Your service booking</h1>
       <p className="text-slate-500 text-sm mb-8">
-        Booking created: {createdDate} · Booking reference: <strong className="text-slate-700">{booking.bookingRef}</strong>
+        Booking created: {createdDate} · Booking reference: <strong className="text-slate-700">{booking.bookingRef || `BK-${(booking.id || '').toString().slice(-6)}`}</strong>
       </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -87,11 +108,11 @@ export default function BookingDetailPage() {
                   <dt className="text-slate-500 flex items-center gap-2">
                     <IndianRupee className="h-4 w-4" /> Service amount
                   </dt>
-                  <dd className="text-slate-900 font-bold text-blue-600">₹{booking.total}</dd>
+                  <dd className="text-slate-900 font-bold text-blue-600">₹{booking.total ?? booking.price ?? '—'}</dd>
                 </div>
                 <div className="border-t border-slate-200 pt-3 flex justify-between items-center">
                   <dt className="text-slate-700 font-semibold">Total</dt>
-                  <dd className="text-lg font-bold text-blue-600">₹{booking.total}</dd>
+                  <dd className="text-lg font-bold text-blue-600">₹{booking.total ?? booking.price ?? '—'}</dd>
                 </div>
               </dl>
             </div>
@@ -129,13 +150,18 @@ export default function BookingDetailPage() {
             <div className="p-6">
               <h2 className="font-bold text-slate-900 mb-4">Options</h2>
               <div className="flex flex-col gap-2">
-                {isLocalBooking ? (
-                  <Button variant="outline" className="justify-start text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300" as={Link} to={`/hiredashboard/bookings/${booking.id}/change`}>
-                    Change date & time
-                  </Button>
-                ) : (
-                  <Button variant="outline" className="justify-start text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300" as={Link} to={`/hiredashboard/services/${booking.category || 'plumbing'}`}>
-                    Change booking
+                <Button
+                  variant="outline"
+                  className="justify-start text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300"
+                  as={Link}
+                  to={`/hiredashboard/bookings/${booking.id}/change`}
+                  state={{ booking }}
+                >
+                  {isLocalBooking ? 'Change date & time' : 'Change booking'}
+                </Button>
+                {!isCancelled && !isCompleted && (booking.status === 'accepted' || booking.status === 'ongoing') && isLocalBooking && (
+                  <Button variant="outline" className="justify-start text-emerald-600 border-emerald-200 hover:bg-emerald-50" onClick={handleMarkCompleted}>
+                    <CheckCircle className="h-4 w-4 mr-2" /> Mark as completed
                   </Button>
                 )}
                 {!isCancelled && !isCompleted && isLocalBooking && (
@@ -143,15 +169,27 @@ export default function BookingDetailPage() {
                     <XCircle className="h-4 w-4 mr-2" /> Cancel booking
                   </Button>
                 )}
-                <Button variant="ghost" className="justify-start text-blue-600" as={Link} to="/hiredashboard/messages">
+                <Button
+                  variant="ghost"
+                  className="justify-start text-blue-600"
+                  as={Link}
+                  to="/hiredashboard/professionals"
+                  state={{ openProfile: { id: booking.providerId || (booking.providerName || 'provider').toLowerCase().replace(/\s+/g, '-').replace(/\./g, ''), name: booking.providerName || 'Provider' } }}
+                >
                   Message provider
                 </Button>
-                <Button variant="ghost" className="justify-start text-slate-600" as={Link} to="/hiredashboard/payments">
+                <Button
+                  variant="ghost"
+                  className="justify-start text-slate-600"
+                  as={Link}
+                  to="/hiredashboard/payments"
+                  state={{ bookingId: booking.id }}
+                >
                   View payment
                 </Button>
               </div>
               <div className="mt-4 pt-4 border-t border-slate-200">
-                <p className="text-xs text-slate-500">Ref: {booking.bookingRef}</p>
+                <p className="text-xs text-slate-500">Ref: {booking.bookingRef || booking.id}</p>
               </div>
             </div>
           </Card>

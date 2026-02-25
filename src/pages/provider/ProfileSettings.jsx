@@ -4,7 +4,10 @@ import { useAuth } from '@clerk/clerk-react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { User, Wrench, Clock, CreditCard, Star, MapPin, Phone, Save, X } from 'lucide-react'
+import { User, Wrench, Clock, CreditCard, Star, MapPin, Phone, Save, X, RefreshCw } from 'lucide-react'
+import { getProviderProfile, saveProviderProfile } from '@/lib/profileStorage'
+import { useToast } from '@/context/ToastContext'
+import PageLoader from '@/components/PageLoader'
 
 const DUMMY_PROFILE = {
   name: 'Ravi Kumar',
@@ -36,6 +39,7 @@ function parseJsonSafe(str, fallback) {
 
 export default function ProfileSettings() {
   const { getToken } = useAuth()
+  const toast = useToast()
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -43,13 +47,23 @@ export default function ProfileSettings() {
   const [editingSection, setEditingSection] = useState(null)
   const [editForm, setEditForm] = useState({})
 
-  useEffect(() => {
-    let cancelled = false
+  const loadProfile = () => {
+    setLoading(true)
+    setError(null)
+    const stored = getProviderProfile()
     fetchApiJson('/api/service-providers/me/profile', {}, getToken)
-      .then((data) => { if (!cancelled && data) setProfile(data) })
-      .catch(() => { if (!cancelled) setProfile(null) })
-      .finally(() => { if (!cancelled) setLoading(false) })
-    return () => { cancelled = true }
+      .then((data) => {
+        setProfile({ ...stored, ...data })
+      })
+      .catch(() => {
+        setProfile(stored ? { ...DUMMY_PROFILE, ...stored } : DUMMY_PROFILE)
+        setError(true)
+      })
+      .finally(() => setLoading(false))
+  }
+
+  useEffect(() => {
+    loadProfile()
   }, [getToken])
 
   const data = profile || DUMMY_PROFILE
@@ -78,11 +92,16 @@ export default function ProfileSettings() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       }, getToken)
-      if (updated) setProfile(updated)
+      if (updated) {
+        setProfile(updated)
+        saveProviderProfile({ name: updated.name, phone: updated.phone, dateOfBirth: updated.dateOfBirth, gender: updated.gender })
+      }
       setEditingSection(null)
       setEditForm({})
+      toast.success('Profile updated.')
     } catch (e) {
       setError(e?.message || 'Failed to save')
+      toast.error('Failed to save.')
     } finally {
       setSaving(false)
     }
@@ -93,10 +112,10 @@ export default function ProfileSettings() {
   const handleSaveAvailability = () => saveProfile({ serviceArea: editForm.serviceArea, travelRadiusKm: editForm.travelRadiusKm !== '' ? parseInt(editForm.travelRadiusKm, 10) : null })
   const handleSaveBank = () => saveProfile({ bankAccountNumber: editForm.bankAccountNumber, upiId: editForm.upiId })
 
-  if (loading) {
+  if (loading && !profile) {
     return (
       <div className="container mx-auto px-4 py-10 max-w-4xl">
-        <div className="animate-pulse text-slate-500">Loading profile…</div>
+        <PageLoader message="Loading profile…" />
       </div>
     )
   }
@@ -110,7 +129,17 @@ export default function ProfileSettings() {
           Showing sample profile. Complete onboarding to see your saved data here.
         </p>
       )}
-      {error && <p className="text-sm text-red-600 mb-4 bg-red-50 p-3 rounded-lg">{error}</p>}
+      {error === true && (
+        <p className="text-sm text-red-600 mb-4 bg-red-50 p-3 rounded-lg flex items-center justify-between gap-2">
+          <span>Could not load profile from server.</span>
+          <Button variant="outline" size="sm" onClick={loadProfile} className="gap-1.5 shrink-0">
+            <RefreshCw className="h-4 w-4" /> Retry
+          </Button>
+        </p>
+      )}
+      {typeof error === 'string' && error && (
+        <p className="text-sm text-red-600 mb-4 bg-red-50 p-3 rounded-lg">{error}</p>
+      )}
       <div className="space-y-6">
         {/* Profile */}
         <Card className="overflow-hidden">

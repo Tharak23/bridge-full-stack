@@ -3,28 +3,57 @@ import { Link } from 'react-router-dom'
 import { fetchApiJson } from '@/lib/api'
 import { useAuth } from '@clerk/clerk-react'
 import { Card } from '@/components/ui/card'
-import { Calendar, MessageCircle, CreditCard, Briefcase } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Calendar, MessageCircle, CreditCard, Briefcase, Pencil, RefreshCw } from 'lucide-react'
+import { getHireProfile, saveHireProfile } from '@/lib/profileStorage'
+import { useToast } from '@/context/ToastContext'
+import PageLoader from '@/components/PageLoader'
 
 export default function HireProfile() {
   const { getToken } = useAuth()
+  const toast = useToast()
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [editName, setEditName] = useState('')
+  const [editPhone, setEditPhone] = useState('')
 
-  useEffect(() => {
-    let cancelled = false
+  const loadProfile = () => {
+    setLoading(true)
+    setError(false)
+    const stored = getHireProfile()
     fetchApiJson('/api/users/me', {}, getToken)
       .then((data) => {
-        if (!cancelled) setProfile(data)
+        setProfile({ ...stored, ...data })
+        setEditName(data?.name || stored?.name || '')
+        setEditPhone(data?.phone || stored?.phone || '')
       })
-      .catch(() => setProfile(null))
-      .finally(() => { if (!cancelled) setLoading(false) })
-    return () => { cancelled = true }
+      .catch(() => {
+        setProfile(stored ? { ...stored } : { name: 'User', phone: '', role: 'hire' })
+        setEditName(stored?.name || 'User')
+        setEditPhone(stored?.phone || '')
+        setError(true)
+      })
+      .finally(() => setLoading(false))
+  }
+
+  useEffect(() => {
+    loadProfile()
   }, [getToken])
 
-  if (loading) {
+  const handleSaveProfile = () => {
+    saveHireProfile({ name: editName.trim(), phone: editPhone.trim() })
+    setProfile((prev) => ({ ...prev, name: editName.trim() || prev?.name, phone: editPhone.trim() || prev?.phone }))
+    setEditing(false)
+    toast.success('Profile updated.')
+  }
+
+  if (loading && !profile) {
     return (
-      <div className="container mx-auto px-4 py-12 flex justify-center">
-        <div className="animate-pulse text-slate-500">Loading…</div>
+      <div className="container mx-auto px-4 py-12">
+        <PageLoader message="Loading profile…" />
       </div>
     )
   }
@@ -42,11 +71,46 @@ export default function HireProfile() {
               {initial}
             </div>
             <div className="text-center md:text-left mt-4 md:mt-0">
-              <h1 className="text-2xl font-bold text-slate-900">{name}</h1>
-              <span className="inline-block mt-1 rounded bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-700">CUSTOMER</span>
+              {editing ? (
+                <div className="space-y-2">
+                  <Input
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    placeholder="Name"
+                    className="max-w-xs"
+                  />
+                  <Input
+                    value={editPhone}
+                    onChange={(e) => setEditPhone(e.target.value)}
+                    placeholder="Phone"
+                    className="max-w-xs"
+                  />
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={handleSaveProfile}>Save</Button>
+                    <Button size="sm" variant="outline" onClick={() => { setEditing(false); setEditName(name); setEditPhone(profile?.phone || ''); }}>Cancel</Button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <h1 className="text-2xl font-bold text-slate-900">{name}</h1>
+                  <span className="inline-block mt-1 rounded bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-700">CUSTOMER</span>
+                  <Button variant="ghost" size="sm" className="mt-2 gap-1.5" onClick={() => setEditing(true)}>
+                    <Pencil className="h-4 w-4" /> Edit profile
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
+
+        {error && (
+          <div className="mt-4 p-3 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-between gap-4">
+            <p className="text-sm text-amber-800">Could not load profile from server. Showing saved profile.</p>
+            <Button variant="outline" size="sm" onClick={loadProfile} className="gap-1.5">
+              <RefreshCw className="h-4 w-4" /> Retry
+            </Button>
+          </div>
+        )}
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-6 text-sm text-slate-600">
           <span>Phone: {profile?.phone || '—'}</span>
@@ -84,10 +148,10 @@ export default function HireProfile() {
                 <MessageCircle className="h-6 w-6" />
               </div>
               <div>
-                <p className="font-semibold text-slate-900">Messages</p>
+                <p className="font-semibold text-slate-900">Professionals</p>
                 <p className="text-sm text-slate-500">Chat with professionals</p>
               </div>
-              <Link to="/hiredashboard/messages" className="ml-auto text-blue-600 font-medium text-sm shrink-0">View →</Link>
+              <Link to="/hiredashboard/professionals" className="ml-auto text-blue-600 font-medium text-sm shrink-0">View →</Link>
             </div>
           </Card>
           <Card className="overflow-hidden">

@@ -66,13 +66,17 @@ export default function ServiceSelectPage() {
               variant="outline"
               size="sm"
               className="ml-auto shrink-0"
-              onClick={() => navigate('/hiredashboard/messages', { state: { openConversation: { id: 'ajay', name: DUMMY_PROVIDER.name } } })}
+              onClick={() => navigate('/hiredashboard/professionals', { state: { openProfile: { id: 'ajay', name: DUMMY_PROVIDER.name } } })}
             >
               <MessageCircle className="h-4 w-4 mr-2" /> Message
             </Button>
           </div>
-          <div className="w-full h-48 rounded-xl bg-slate-200 flex items-center justify-center text-slate-500">
-            Service preview
+          <div className="w-full h-48 rounded-xl overflow-hidden bg-slate-200">
+            <img
+              src={`https://picsum.photos/seed/${category}-${service.slug}/640/192`}
+              alt=""
+              className="w-full h-full object-cover"
+            />
           </div>
 
           <Card className="overflow-hidden">
@@ -207,7 +211,7 @@ export default function ServiceSelectPage() {
               <Button
                 variant="outline"
                 className="w-full rounded-lg"
-                onClick={() => navigate('/hiredashboard/messages', { state: { openConversation: { id: 'ajay', name: DUMMY_PROVIDER.name } } })}
+                onClick={() => navigate('/hiredashboard/professionals', { state: { openProfile: { id: 'ajay', name: DUMMY_PROVIDER.name } } })}
               >
                 <MessageCircle className="h-4 w-4 mr-2" /> Message {DUMMY_PROVIDER.name.split(' ')[0]}
               </Button>

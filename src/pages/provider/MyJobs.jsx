@@ -4,7 +4,11 @@ import { useAuth } from '@clerk/clerk-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { MapPin, IndianRupee } from 'lucide-react'
+import { MapPin, IndianRupee, Briefcase } from 'lucide-react'
+import { getAssignedRequestsForProvider } from '@/lib/serviceRequestsStorage'
+import PageLoader from '@/components/PageLoader'
+
+const PROVIDER_ID = 'pro-1'
 
 const DUMMY_UPCOMING = [
   { id: 'u1', serviceName: 'AC Repair', locationText: 'Jubilee Hills, Hyderabad', price: 299, status: 'accepted' },
@@ -114,10 +118,12 @@ export default function MyJobs() {
     </div>
   )
 
+  const assignedRequests = getAssignedRequestsForProvider(PROVIDER_ID)
+
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-10 flex items-center justify-center min-h-[40vh]">
-        <div className="animate-pulse text-slate-500">Loading…</div>
+      <div className="container mx-auto px-4 py-10">
+        <PageLoader message="Loading jobs…" />
       </div>
     )
   }
@@ -126,6 +132,30 @@ export default function MyJobs() {
     <div className="container mx-auto px-4 py-10 max-w-4xl">
       <h1 className="text-2xl font-bold text-slate-900 mb-1">My Jobs</h1>
       <p className="text-slate-500 mb-8">Manage your upcoming, ongoing, and completed jobs</p>
+
+      {assignedRequests.length > 0 && (
+        <div className="mb-10">
+          <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <Briefcase className="h-5 w-5 text-teal-600" />
+            Assigned custom jobs
+          </h2>
+          <div className="space-y-3">
+            {assignedRequests.map((req) => (
+              <Card key={req.id} className="overflow-hidden border-l-4 border-l-teal-500">
+                <div className="p-5">
+                  <p className="font-semibold text-slate-900">{req.description || 'Custom request'}</p>
+                  <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-slate-500">
+                    <span className="capitalize bg-slate-100 px-2 py-0.5 rounded">{req.category?.replace(/_/g, ' ')}</span>
+                    {req.budgetMin && <span>Budget: ₹{req.budgetMin}</span>}
+                  </div>
+                  <p className="text-xs text-slate-500 mt-2">Assigned to you. Contact customer via Professionals/Chat.</p>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
       <Section title="Upcoming" items={displayUpcoming} empty="No upcoming jobs." isDummy={upcoming.length === 0} />
       <Section title="Ongoing" items={displayOngoing} empty="No ongoing jobs." isDummy={ongoing.length === 0} />
       <Section title="Completed" items={displayCompleted} empty="No completed jobs yet." isDummy={completed.length === 0} />

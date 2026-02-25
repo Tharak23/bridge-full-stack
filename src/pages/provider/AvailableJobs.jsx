@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { getOpenRequests, addApplicant } from '@/lib/serviceRequestsStorage'
+import { useToast } from '@/context/ToastContext'
 import { Briefcase, Calendar, IndianRupee } from 'lucide-react'
 
 const PROVIDER_DUMMY = { id: 'pro-1', name: 'Ajay K.' }
@@ -13,6 +15,7 @@ function formatDate(d) {
 }
 
 export default function AvailableJobs() {
+  const toast = useToast()
   const requests = getOpenRequests()
   const [appliedIds, setAppliedIds] = useState(() => {
     try {
@@ -22,18 +25,23 @@ export default function AvailableJobs() {
       return []
     }
   })
+  const [messageByReq, setMessageByReq] = useState({})
 
   const handleApply = (requestId) => {
+    const message = messageByReq[requestId]?.trim() || 'I can help with this. Experienced in this category.'
     addApplicant(requestId, {
       providerId: PROVIDER_DUMMY.id,
       providerName: PROVIDER_DUMMY.name,
-      message: 'I can help with this. Experienced in this category.',
+      message,
+      rating: 4.9,
     })
     setAppliedIds((prev) => {
       const next = [...prev, requestId]
       localStorage.setItem('bridge_provider_applied', JSON.stringify(next))
       return next
     })
+    setMessageByReq((prev) => ({ ...prev, [requestId]: '' }))
+    toast.success('Application sent.')
   }
 
   return (
@@ -55,10 +63,10 @@ export default function AvailableJobs() {
               <Card key={req.id} className="overflow-hidden">
                 <div className="p-5">
                   <div className="flex flex-wrap items-start justify-between gap-4">
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <p className="font-bold text-slate-900">{req.description || 'Custom request'}</p>
                       <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-slate-500">
-                        <span className="capitalize bg-slate-100 px-2 py-0.5 rounded">{req.category}</span>
+                        <span className="capitalize bg-slate-100 px-2 py-0.5 rounded">{req.category.replace(/_/g, ' ')}</span>
                         <span className="flex items-center gap-1">
                           <Calendar className="h-4 w-4" /> {formatDate(req.preferredDate)}
                         </span>
@@ -78,6 +86,17 @@ export default function AvailableJobs() {
                       {applied ? 'Applied' : 'Apply'}
                     </Button>
                   </div>
+                  {!applied && (
+                    <div className="mt-3 pt-3 border-t border-slate-100">
+                      <label className="block text-xs font-medium text-slate-600 mb-1">Message to customer (optional)</label>
+                      <Input
+                        placeholder="e.g. I can do this tomorrow. 5+ years experience."
+                        value={messageByReq[req.id] || ''}
+                        onChange={(e) => setMessageByReq((prev) => ({ ...prev, [req.id]: e.target.value }))}
+                        className="text-sm"
+                      />
+                    </div>
+                  )}
                 </div>
               </Card>
             )

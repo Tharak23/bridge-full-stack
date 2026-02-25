@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Star, Shield } from 'lucide-react'
 import { addBooking } from '@/lib/bookingsStorage'
+import { addPayment } from '@/lib/paymentsStorage'
 import { useLocationContext } from '@/context/LocationContext'
 
 const DUMMY_REVIEWS = [
@@ -41,6 +42,13 @@ export default function BookingConfirmPage() {
       createdAt: new Date().toISOString(),
       providerName: draft.provider?.name,
       locationText: typeof draft.locationText === 'string' ? draft.locationText : (savedLocation || undefined),
+    })
+    addPayment({
+      bookingId: created.id,
+      serviceName: created.serviceName,
+      location: created.locationText,
+      amount: total,
+      status: 'Pending',
     })
     sessionStorage.removeItem('bridge_booking_draft')
     navigate('/hiredashboard/booking/success', { state: { booking: created } })

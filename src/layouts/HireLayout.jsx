@@ -1,12 +1,31 @@
 import { useState } from 'react'
-import { Link, Outlet, useNavigate } from 'react-router-dom'
+import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { UserButton } from '@clerk/clerk-react'
-import { Search, MapPin, Calendar, MessageCircle, CreditCard, User, Home } from 'lucide-react'
+import { Search, MapPin, Calendar, Users, CreditCard, User, Home } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
 import Footer from '@/components/Footer'
 import { useLocationContext } from '@/context/LocationContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+
+function NavLink({ to, icon: Icon, label, end, alsoActive }) {
+  const location = useLocation()
+  const isActive = end
+    ? location.pathname === to
+    : location.pathname.startsWith(to) || (Array.isArray(alsoActive) && alsoActive.some((p) => location.pathname.startsWith(p)))
+  return (
+    <Link to={to}>
+      <Button
+        variant="ghost"
+        size="sm"
+        className={`gap-1.5 ${isActive ? 'bg-teal-50 text-teal-700 hover:bg-teal-100 hover:text-teal-800' : 'text-slate-600 hover:text-slate-900'}`}
+      >
+        <Icon className="h-4 w-4" />
+        <span className="hidden sm:inline">{label}</span>
+      </Button>
+    </Link>
+  )
+}
 
 export default function HireLayout() {
   const navigate = useNavigate()
@@ -77,36 +96,11 @@ export default function HireLayout() {
           </div>
 
           <nav className="flex items-center gap-1">
-            <Link to="/hiredashboard">
-              <Button variant="ghost" size="sm" className="gap-1.5 text-slate-600">
-                <Home className="h-4 w-4" />
-                <span className="hidden sm:inline">Home</span>
-              </Button>
-            </Link>
-            <Link to="/hiredashboard/bookings">
-              <Button variant="ghost" size="sm" className="gap-1.5 text-slate-600">
-                <Calendar className="h-4 w-4" />
-                <span className="hidden sm:inline">My Bookings</span>
-              </Button>
-            </Link>
-            <Link to="/hiredashboard/messages">
-              <Button variant="ghost" size="sm" className="gap-1.5 text-slate-600">
-                <MessageCircle className="h-4 w-4" />
-                <span className="hidden sm:inline">Messages</span>
-              </Button>
-            </Link>
-            <Link to="/hiredashboard/payments">
-              <Button variant="ghost" size="sm" className="gap-1.5 text-slate-600">
-                <CreditCard className="h-4 w-4" />
-                <span className="hidden sm:inline">Payments</span>
-              </Button>
-            </Link>
-            <Link to="/hiredashboard/profile">
-              <Button variant="ghost" size="sm" className="gap-1.5 text-slate-600">
-                <User className="h-4 w-4" />
-                <span className="hidden sm:inline">Profile</span>
-              </Button>
-            </Link>
+            <NavLink to="/hiredashboard" icon={Home} label="Home" end />
+            <NavLink to="/hiredashboard/bookings" icon={Calendar} label="My Bookings" />
+            <NavLink to="/hiredashboard/professionals" icon={Users} label="Professionals" alsoActive={['/hiredashboard/messages']} />
+            <NavLink to="/hiredashboard/payments" icon={CreditCard} label="Payments" />
+            <NavLink to="/hiredashboard/profile" icon={User} label="Profile" />
             {count > 0 && (
               <Link to="/hiredashboard/cart" className="relative inline-flex">
                 <Button variant="ghost" size="sm" className="gap-1.5 text-slate-600">

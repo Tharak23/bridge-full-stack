@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState, useMemo } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Wrench, Zap, Wind, Sparkles, Scissors, Tv, BookOpen, Briefcase, MoreHorizontal, Send } from 'lucide-react'
 import { Card } from '@/components/ui/card'
@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DUMMY_CATEGORIES, FEATURED_NEAR_YOU, HOW_IT_WORKS, POPULAR_PROFESSIONALS } from '@/data/hireDummy'
 import { addRequest } from '@/lib/serviceRequestsStorage'
+import { useToast } from '@/context/ToastContext'
 
 const iconMap = {
   wrench: Wrench,
@@ -46,12 +47,44 @@ const CATEGORY_OPTIONS = [
 
 export default function HireHome() {
   const navigate = useNavigate()
+  const toast = useToast()
+  const [searchParams] = useSearchParams()
+  const searchQ = (searchParams.get('q') || '').trim().toLowerCase()
   const [categories] = useState(DUMMY_CATEGORIES)
   const [requestCategory, setRequestCategory] = useState('plumbing')
   const [requestDesc, setRequestDesc] = useState('')
   const [requestDate, setRequestDate] = useState('')
   const [requestBudget, setRequestBudget] = useState('')
   const [requestSent, setRequestSent] = useState(false)
+
+  const filteredCategories = useMemo(
+    () =>
+      !searchQ
+        ? DUMMY_CATEGORIES
+        : DUMMY_CATEGORIES.filter(
+            (c) => c.name.toLowerCase().includes(searchQ) || c.slug.toLowerCase().includes(searchQ)
+          ),
+    [searchQ]
+  )
+  const filteredFeatured = useMemo(
+    () =>
+      !searchQ
+        ? FEATURED_NEAR_YOU
+        : FEATURED_NEAR_YOU.filter((f) => f.name.toLowerCase().includes(searchQ) || (f.category && f.category.toLowerCase().includes(searchQ))),
+    [searchQ]
+  )
+  const filteredPopular = useMemo(
+    () =>
+      !searchQ
+        ? POPULAR_PROFESSIONALS
+        : POPULAR_PROFESSIONALS.filter(
+            (p) =>
+              p.name.toLowerCase().includes(searchQ) ||
+              (p.category && p.category.toLowerCase().includes(searchQ)) ||
+              (p.slug && p.slug.toLowerCase().includes(searchQ))
+          ),
+    [searchQ]
+  )
 
   const handleSubmitRequest = (e) => {
     e.preventDefault()
@@ -66,11 +99,22 @@ export default function HireHome() {
     setRequestDesc('')
     setRequestDate('')
     setRequestBudget('')
+    toast.success('Request submitted. View in My Bookings → Services requested.')
     setTimeout(() => navigate('/hiredashboard/bookings?tab=requests'), 500)
   }
 
   return (
     <>
+      {searchQ && (
+        <section className="container mx-auto px-4 py-4 bg-slate-100 border-b border-slate-200">
+          <p className="text-sm text-slate-600">
+            Search results for <strong className="text-slate-900">&quot;{searchParams.get('q')}&quot;</strong>
+            {filteredCategories.length === 0 && filteredFeatured.length === 0 && filteredPopular.length === 0 && (
+              <span className="block mt-1 text-slate-500">No matches. Try a different term.</span>
+            )}
+          </p>
+        </section>
+      )}
       <section className="bg-teal-700 text-white py-20 md:py-24">
         <div className="container mx-auto px-4 text-center max-w-4xl">
           <motion.h1
@@ -92,100 +136,7 @@ export default function HireHome() {
         </div>
       </section>
 
-      <section className="container mx-auto px-4 py-12 md:py-14">
-        <h2 className="text-2xl font-bold text-slate-900 mb-1">Service categories</h2>
-        <p className="text-slate-500 mb-8">Choose a category to browse services</p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4 md:gap-5">
-          {categories.map((cat, i) => {
-            const Icon = iconMap[cat.icon] || Wrench
-            const colorClass = categoryColors[i % categoryColors.length]
-            return (
-              <motion.div
-                key={cat.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.04 }}
-                className="min-h-[140px]"
-              >
-                <Link to={`/hiredashboard/services/${cat.slug}`} className="block h-full group">
-                  <Card hover className="h-full">
-                    <div className="p-6 flex flex-col items-center justify-center gap-3 text-center min-h-[140px]">
-                      <span
-                        className={`inline-flex items-center justify-center w-12 h-12 rounded-xl ${colorClass} text-white shadow-md transition-transform duration-200 group-hover:scale-105`}
-                      >
-                        <Icon className="h-6 w-6" />
-                      </span>
-                      <span className="font-semibold text-slate-800 group-hover:text-teal-700 transition-colors text-sm">
-                        {cat.name}
-                      </span>
-                    </div>
-                  </Card>
-                </Link>
-              </motion.div>
-            )
-          })}
-        </div>
-      </section>
-
       <section className="container mx-auto px-4 py-12 md:py-14 border-t border-slate-200 bg-white">
-        <h2 className="text-2xl font-bold text-slate-900 mb-1">Featured near you</h2>
-        <p className="text-slate-500 mb-8">Popular services in your area</p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          {FEATURED_NEAR_YOU.map((item) => (
-            <Link
-              key={item.name}
-              to={`/hiredashboard/services/${item.category}`}
-              className="block"
-            >
-              <Card hover className="h-full">
-                <div className="p-6 flex flex-col">
-                  <span className="font-bold text-slate-900 text-lg block mb-1">{item.name}</span>
-                  <p className="text-sm text-slate-500 mb-2">★ {item.rating} · {item.price}</p>
-                  <span className="text-sm text-teal-600 font-medium">View services →</span>
-                </div>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="container mx-auto px-4 py-12 md:py-14">
-        <h2 className="text-2xl font-bold text-slate-900 mb-1">How it works</h2>
-        <p className="text-slate-500 mb-8">Book in three simple steps</p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {HOW_IT_WORKS.map((item) => (
-            <Card key={item.step} className="overflow-hidden">
-              <div className="p-6 flex flex-col">
-                <span className="inline-flex w-10 h-10 rounded-full bg-teal-100 text-teal-700 font-bold items-center justify-center mb-3">
-                  {item.step}
-                </span>
-                <h3 className="font-semibold text-slate-900 text-lg mb-2">{item.title}</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">{item.text}</p>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      <section className="container mx-auto px-4 py-12 md:py-14 border-t border-slate-200 bg-white">
-        <h2 className="text-2xl font-bold text-slate-900 mb-1">Popular professionals</h2>
-        <p className="text-slate-500 mb-8">Trusted professionals by category</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {POPULAR_PROFESSIONALS.map(({ name, category, slug, rating }) => (
-            <Link key={name} to={`/hiredashboard/services/${slug}`} className="block min-h-[120px]">
-              <Card hover className="h-full min-h-[120px] flex">
-                <div className="p-6 flex flex-col justify-center w-full">
-                  <span className="font-bold text-slate-900 text-lg block mb-1">{name}</span>
-                  <span className="text-sm text-slate-500 block mb-2">{category} · ★ {rating}</span>
-                  <span className="text-sm text-teal-600 font-medium">View services →</span>
-                </div>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="container mx-auto px-4 py-12 md:py-14">
         <h2 className="text-2xl font-bold text-slate-900 mb-1">Request custom work</h2>
         <p className="text-slate-500 mb-6">Describe the work you need. Professionals can apply and you choose who to assign.</p>
         {requestSent && (
@@ -234,6 +185,99 @@ export default function HireHome() {
             </div>
           </form>
         </Card>
+      </section>
+
+      <section className="container mx-auto px-4 py-12 md:py-14">
+        <h2 className="text-2xl font-bold text-slate-900 mb-1">Service categories</h2>
+        <p className="text-slate-500 mb-8">Choose a category to browse services</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4 md:gap-5">
+          {filteredCategories.map((cat, i) => {
+            const Icon = iconMap[cat.icon] || Wrench
+            const colorClass = categoryColors[i % categoryColors.length]
+            return (
+              <motion.div
+                key={cat.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.04 }}
+                className="min-h-[140px]"
+              >
+                <Link to={`/hiredashboard/services/${cat.slug}`} className="block h-full group">
+                  <Card hover className="h-full">
+                    <div className="p-6 flex flex-col items-center justify-center gap-3 text-center min-h-[140px]">
+                      <span
+                        className={`inline-flex items-center justify-center w-12 h-12 rounded-xl ${colorClass} text-white shadow-md transition-transform duration-200 group-hover:scale-105`}
+                      >
+                        <Icon className="h-6 w-6" />
+                      </span>
+                      <span className="font-semibold text-slate-800 group-hover:text-teal-700 transition-colors text-sm">
+                        {cat.name}
+                      </span>
+                    </div>
+                  </Card>
+                </Link>
+              </motion.div>
+            )
+          })}
+        </div>
+      </section>
+
+      <section className="container mx-auto px-4 py-12 md:py-14 border-t border-slate-200 bg-white">
+        <h2 className="text-2xl font-bold text-slate-900 mb-1">Featured near you</h2>
+        <p className="text-slate-500 mb-8">Popular services in your area</p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          {filteredFeatured.map((item) => (
+            <Link
+              key={item.name}
+              to={`/hiredashboard/services/${item.category}`}
+              className="block"
+            >
+              <Card hover className="h-full">
+                <div className="p-6 flex flex-col">
+                  <span className="font-bold text-slate-900 text-lg block mb-1">{item.name}</span>
+                  <p className="text-sm text-slate-500 mb-2">★ {item.rating} · {item.price}</p>
+                  <span className="text-sm text-teal-600 font-medium">View services →</span>
+                </div>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="container mx-auto px-4 py-12 md:py-14 border-t border-slate-200 bg-white">
+        <h2 className="text-2xl font-bold text-slate-900 mb-1">How it works</h2>
+        <p className="text-slate-500 mb-8">Book in three simple steps</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {HOW_IT_WORKS.map((item) => (
+            <Card key={item.step} className="overflow-hidden">
+              <div className="p-6 flex flex-col">
+                <span className="inline-flex w-10 h-10 rounded-full bg-teal-100 text-teal-700 font-bold items-center justify-center mb-3">
+                  {item.step}
+                </span>
+                <h3 className="font-semibold text-slate-900 text-lg mb-2">{item.title}</h3>
+                <p className="text-slate-600 text-sm leading-relaxed">{item.text}</p>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section className="container mx-auto px-4 py-12 md:py-14">
+        <h2 className="text-2xl font-bold text-slate-900 mb-1">Popular professionals</h2>
+        <p className="text-slate-500 mb-8">Trusted professionals by category</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {filteredPopular.map(({ name, category, slug, rating }) => (
+            <Link key={name} to={`/hiredashboard/services/${slug}`} className="block min-h-[120px]">
+              <Card hover className="h-full min-h-[120px] flex">
+                <div className="p-6 flex flex-col justify-center w-full">
+                  <span className="font-bold text-slate-900 text-lg block mb-1">{name}</span>
+                  <span className="text-sm text-slate-500 block mb-2">{category} · ★ {rating}</span>
+                  <span className="text-sm text-teal-600 font-medium">View services →</span>
+                </div>
+              </Card>
+            </Link>
+          ))}
+        </div>
       </section>
     </>
   )

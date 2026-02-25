@@ -83,4 +83,18 @@ export function updateRequest(id, updates) {
   return list.find((r) => r.id === id)
 }
 
+export function cancelRequest(id) {
+  return updateRequest(id, { status: 'cancelled', cancelledAt: new Date().toISOString() })
+}
+
+export function deleteRequest(id) {
+  const list = getRequests().filter((r) => r.id !== id)
+  saveRequests(list)
+  return true
+}
+
+export function getAssignedRequestsForProvider(providerId) {
+  return getRequests().filter((r) => r.assignedProviderId === providerId)
+}
+
 export { getRequests }

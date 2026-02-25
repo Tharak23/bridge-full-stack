@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Briefcase, MapPin, IndianRupee } from 'lucide-react'
+import PageLoader from '@/components/PageLoader'
 
 const DUMMY_JOBS = [
   { id: 'd1', serviceName: 'AC Repair', locationText: 'Jubilee Hills, Hyderabad', price: 299, quantity: 1 },
@@ -55,7 +56,7 @@ export default function JobFeed() {
         <Badge variant="success" className="rounded-full">Online</Badge>
       </div>
       {loading ? (
-        <div className="animate-pulse text-slate-500">Loading…</div>
+        <PageLoader message="Loading job feed…" />
       ) : (
         <div className="space-y-4">
           {displayJobs.map((job) => (

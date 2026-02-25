@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Star, CheckCircle2 } from 'lucide-react'
+import PageLoader from '@/components/PageLoader'
 
 export default function ServiceDetail() {
   const { category, slug } = useParams()
@@ -48,8 +49,8 @@ export default function ServiceDetail() {
 
   if (!service) {
     return (
-      <div className="container mx-auto px-4 py-12 flex items-center justify-center min-h-[40vh]">
-        <div className="animate-pulse text-slate-500">Loading…</div>
+      <div className="container mx-auto px-4 py-12">
+        <PageLoader message="Loading service…" />
       </div>
     )
   }

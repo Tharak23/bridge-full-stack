@@ -5,8 +5,10 @@ import { useAuth } from '@clerk/clerk-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { getBookings } from '@/lib/bookingsStorage'
-import { getRequests, assignProvider } from '@/lib/serviceRequestsStorage'
-import { Calendar, ChevronRight, User, CheckCircle, Pencil } from 'lucide-react'
+import { getRequests, assignProvider, cancelRequest, deleteRequest } from '@/lib/serviceRequestsStorage'
+import { useToast } from '@/context/ToastContext'
+import PageLoader from '@/components/PageLoader'
+import { Calendar, ChevronRight, User, CheckCircle, Pencil, XCircle, Trash2 } from 'lucide-react'
 
 const DUMMY_APPLICANTS = [
   { providerId: 'pro-1', providerName: 'Ajay K.', message: 'I can help with this. 5+ years experience.', rating: 4.9 },
@@ -39,8 +41,10 @@ export default function BookingsPage() {
   const tab = searchParams.get('tab') || 'bookings'
   const { getToken } = useAuth()
   const navigate = useNavigate()
+  const toast = useToast()
   const [apiBookings, setApiBookings] = useState([])
   const [loading, setLoading] = useState(true)
+  const [requestsKey, setRequestsKey] = useState(0)
 
   const localBookings = getBookings()
   const serviceRequests = getRequests()
@@ -59,7 +63,12 @@ export default function BookingsPage() {
   const now = new Date()
   const thisMonth = now.getMonth()
   const thisYear = now.getFullYear()
-  const allBookings = [
+  const DUMMY_BOOKINGS_FALLBACK = [
+    { id: 'dummy-1', serviceName: 'Tap & leak repair', locationText: 'Koramangala, Bangalore', serviceDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), scheduledDate: formatDate(new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)), price: 199, total: 199, status: 'accepted', source: 'dummy' },
+    { id: 'dummy-2', serviceName: 'AC service', locationText: 'HSR Layout, Bangalore', serviceDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), scheduledDate: formatDate(new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)), price: 349, total: 349, status: 'ongoing', source: 'dummy' },
+  ]
+
+  const allBookingsRaw = [
     ...localBookings.map((b) => ({
       ...b,
       price: b.total,
@@ -73,7 +82,8 @@ export default function BookingsPage() {
       locationText: b.locationText || b.location_text || '—',
       source: 'api',
     })),
-  ].sort((a, b) => {
+  ]
+  const allBookings = (allBookingsRaw.length > 0 ? allBookingsRaw : DUMMY_BOOKINGS_FALLBACK).sort((a, b) => {
     const da = a.serviceDate || a.scheduled_at || a.createdAt
     const db = b.serviceDate || b.scheduled_at || b.createdAt
     if (!da) return 1
@@ -82,6 +92,7 @@ export default function BookingsPage() {
   })
 
   const bookingsThisMonth = allBookings.filter((b) => {
+    if (b.source === 'dummy') return false
     const d = b.serviceDate || b.scheduled_at
     if (!d) return false
     const dt = new Date(d)
@@ -90,13 +101,28 @@ export default function BookingsPage() {
 
   const handleAccept = (requestId, providerId, providerName) => {
     assignProvider(requestId, providerId, providerName)
-    navigate(0)
+    setRequestsKey((k) => k + 1)
+    toast.success('Provider assigned.')
+  }
+
+  const handleCancelRequest = (req) => {
+    if (!window.confirm('Cancel this request? You can create a new one later.')) return
+    cancelRequest(req.id)
+    setRequestsKey((k) => k + 1)
+    toast.success('Request cancelled.')
+  }
+
+  const handleDeleteRequest = (req) => {
+    if (!window.confirm('Delete this request permanently?')) return
+    deleteRequest(req.id)
+    setRequestsKey((k) => k + 1)
+    toast.success('Request deleted.')
   }
 
   if (loading && allBookings.length === 0 && tab === 'bookings') {
     return (
-      <div className="container mx-auto px-4 py-10 flex items-center justify-center min-h-[40vh]">
-        <div className="animate-pulse text-slate-500">Loading…</div>
+      <div className="container mx-auto px-4 py-10">
+        <PageLoader message="Loading bookings…" />
       </div>
     )
   }
@@ -140,14 +166,14 @@ export default function BookingsPage() {
         <div className="space-y-4">
           {serviceRequests.length === 0 ? (
             <Card className="p-12 text-center">
-              <p className="text-slate-500 mb-4">No custom requests yet. Create one from the home page.</p>
-              <Link to="/hiredashboard">
+              <p className="text-slate-500 mb-4">No custom requests yet. Describe what you need and professionals can apply.</p>
+              <Link to="/hiredashboard/request">
                 <Button>Request custom work</Button>
               </Link>
             </Card>
           ) : (
             serviceRequests.map((req) => (
-              <Card key={req.id} className="overflow-hidden">
+              <Card key={`${req.id}-${requestsKey}`} className="overflow-hidden">
                 <div className="p-5">
                   <div className="flex flex-wrap items-center gap-2 mb-2">
                     <span className="font-bold text-slate-900">{req.description || 'Custom request'}</span>
@@ -155,13 +181,24 @@ export default function BookingsPage() {
                     {req.status === 'assigned' && (
                       <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">Assigned</span>
                     )}
+                    {req.status === 'cancelled' && (
+                      <span className="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded">Cancelled</span>
+                    )}
                     {req.status === 'open' && (
-                      <Link
-                        to={`/hiredashboard/requests/${req.id}/edit`}
-                        className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-600 hover:text-teal-700 ml-auto"
-                      >
-                        <Pencil className="h-3.5 w-3.5" /> Edit
-                      </Link>
+                      <>
+                        <Link
+                          to={`/hiredashboard/requests/${req.id}/edit`}
+                          className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-600 hover:text-teal-700"
+                        >
+                          <Pencil className="h-3.5 w-3.5" /> Edit
+                        </Link>
+                        <button type="button" onClick={() => handleCancelRequest(req)} className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 hover:text-amber-700">
+                          <XCircle className="h-3.5 w-3.5" /> Cancel
+                        </button>
+                        <button type="button" onClick={() => handleDeleteRequest(req)} className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600 hover:text-red-700">
+                          <Trash2 className="h-3.5 w-3.5" /> Delete
+                        </button>
+                      </>
                     )}
                   </div>
                   <p className="text-sm text-slate-500 mb-3">
@@ -203,47 +240,39 @@ export default function BookingsPage() {
         </div>
       ) : (
         <>
-          {allBookings.length === 0 ? (
-            <Card className="overflow-hidden p-12 text-center">
-              <p className="text-slate-500 mb-4">No bookings yet. Book a service to see them here.</p>
-              <Link to="/hiredashboard">
-                <span className="inline-flex items-center justify-center rounded-xl bg-blue-600 text-white px-6 py-2.5 font-medium hover:bg-blue-700 transition-colors">
-                  Browse services
-                </span>
-              </Link>
-            </Card>
-          ) : (
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-slate-800">All bookings</h2>
-              {allBookings.map((b) => (
-                <Card
-                  key={b.id}
-                  className={`overflow-hidden border-l-4 ${borderClass(b.status)} cursor-pointer transition-all hover:shadow-md`}
-                  onClick={() => navigate(`/hiredashboard/bookings/${b.id}`, { state: { booking: b } })}
-                >
-                  <div className="p-5 flex flex-col sm:flex-row sm:items-center gap-4">
-                    <div className="min-w-0 flex-1">
-                      <h2 className="font-bold text-slate-900 text-lg">{b.serviceName}</h2>
-                      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-                        <span className="text-slate-500">Location</span>
-                        <span className="text-slate-700">{b.locationText}</span>
-                        <span className="text-slate-300">·</span>
-                        <span className="text-slate-500">Date</span>
-                        <span className="text-slate-700">{b.scheduledDate || formatDate(b.serviceDate) || '—'}</span>
-                        <span className="text-slate-300">·</span>
-                        <span className="text-slate-500">Amount</span>
-                        <span className="font-semibold text-blue-600">₹{b.price ?? b.total}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <StatusBadge status={b.status} />
-                      <ChevronRight className="h-5 w-5 text-slate-400" />
+          <div className="space-y-4">
+            {allBookingsRaw.length === 0 && (
+              <p className="text-sm text-slate-500">Sample bookings below. Book a service to see your real bookings here.</p>
+            )}
+            <h2 className="text-lg font-semibold text-slate-800">All bookings</h2>
+            {allBookings.map((b) => (
+              <Card
+                key={b.id}
+                className={`overflow-hidden border-l-4 ${borderClass(b.status)} transition-all hover:shadow-md ${b.source === 'dummy' ? 'opacity-90 cursor-default' : 'cursor-pointer'}`}
+                onClick={() => b.source !== 'dummy' && navigate(`/hiredashboard/bookings/${b.id}`, { state: { booking: b } })}
+              >
+                <div className="p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+                  <div className="min-w-0 flex-1">
+                    <h2 className="font-bold text-slate-900 text-lg">{b.serviceName}</h2>
+                    <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+                      <span className="text-slate-500">Location</span>
+                      <span className="text-slate-700">{b.locationText}</span>
+                      <span className="text-slate-300">·</span>
+                      <span className="text-slate-500">Date</span>
+                      <span className="text-slate-700">{b.scheduledDate || formatDate(b.serviceDate) || '—'}</span>
+                      <span className="text-slate-300">·</span>
+                      <span className="text-slate-500">Amount</span>
+                      <span className="font-semibold text-blue-600">₹{b.price ?? b.total}</span>
                     </div>
                   </div>
-                </Card>
-              ))}
-            </div>
-          )}
+                  <div className="flex items-center gap-3 shrink-0">
+                    <StatusBadge status={b.status} />
+                    {b.source !== 'dummy' && <ChevronRight className="h-5 w-5 text-slate-400" />}
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
         </>
       )}
     </div>

@@ -27,6 +27,7 @@ import {
   Sofa,
 } from 'lucide-react'
 import { fetchApiJson } from '../lib/api'
+import { useOnboardStatus } from '../hooks/useOnboardStatus'
 import './Landing.css'
 
 const navLinks = [
@@ -94,12 +95,18 @@ const footerCompany = [
   { label: 'Contact', href: '#' },
 ]
 const footerLegal = [
-  { label: 'Terms of service', href: '#' },
-  { label: 'Privacy policy', href: '#' },
+  { label: 'Terms of service', href: '/terms' },
+  { label: 'Privacy policy', href: '/privacy' },
 ]
+
+function dashboardPath(role) {
+  return role === 'hire' ? '/hiredashboard' : '/dashboard'
+}
 
 export default function Landing() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { role } = useOnboardStatus()
+  const toDashboard = dashboardPath(role)
   const [backendOk, setBackendOk] = useState(null)
 
   useEffect(() => {
@@ -147,7 +154,7 @@ export default function Landing() {
             </SignUpButton>
           </SignedOut>
           <SignedIn>
-            <Link to="/dashboard" className="btn btn-cta">Dashboard</Link>
+            <Link to={toDashboard} className="btn btn-cta">Dashboard</Link>
             <UserButton afterSignOutUrl="/" />
           </SignedIn>
         </div>
@@ -178,7 +185,7 @@ export default function Landing() {
             <SignUpButton mode="modal"><button type="button" className="mobile-btn primary">Sign up</button></SignUpButton>
           </SignedOut>
           <SignedIn>
-            <Link to="/dashboard" className="mobile-btn primary">Dashboard</Link>
+            <Link to={toDashboard} className="mobile-btn primary">Dashboard</Link>
             <UserButton afterSignOutUrl="/" />
           </SignedIn>
         </motion.div>
@@ -214,7 +221,7 @@ export default function Landing() {
               transition={{ delay: 0.6 }}
             >
               <SignedIn>
-                <Link to="/hiredashboard" className="btn btn-hero">Dashboard</Link>
+                <Link to={toDashboard} className="btn btn-hero">Dashboard</Link>
               </SignedIn>
               <SignedOut>
                 <SignUpButton mode="modal">

@@ -20,10 +20,12 @@ import BookingsPage from './pages/hire/BookingsPage'
 import BookingDetailPage from './pages/hire/BookingDetailPage'
 import BookingChangePage from './pages/hire/BookingChangePage'
 import EditRequestPage from './pages/hire/EditRequestPage'
-import MessagesPage from './pages/hire/MessagesPage'
+import RequestCustomPage from './pages/hire/RequestCustomPage'
+import ProfessionalsPage from './pages/hire/ProfessionalsPage'
 import PaymentsPage from './pages/hire/PaymentsPage'
 import HireProfile from './pages/hire/HireProfile'
 import TermsPage from './pages/hire/TermsPage'
+import PrivacyPage from './pages/PrivacyPage'
 import ProviderLayout from './layouts/ProviderLayout'
 import JobFeed from './pages/provider/JobFeed'
 import AvailableJobs from './pages/provider/AvailableJobs'
@@ -37,6 +39,8 @@ import AdminMessages from './pages/admin/AdminMessages'
 import SupportLayout from './layouts/SupportLayout'
 import SupportTickets from './pages/support/SupportTickets'
 import SupportChat from './pages/support/SupportChat'
+import NotFoundPage from './pages/NotFoundPage'
+import { StaffGuard } from './components/StaffGuard'
 import './App.css'
 
 function ProtectedRoute({ children }) {
@@ -54,6 +58,8 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="/onboard" element={<ProtectedRoute><RoleSelect /></ProtectedRoute>} />
       <Route path="/hireonboard" element={<ProtectedRoute><HireOnboard /></ProtectedRoute>} />
       <Route path="/serviceonboard" element={<ProtectedRoute><ServiceOnboard /></ProtectedRoute>} />
@@ -82,17 +88,19 @@ export default function App() {
         <Route path="bookings" element={<BookingsPage />} />
         <Route path="bookings/:id" element={<BookingDetailPage />} />
         <Route path="bookings/:id/change" element={<BookingChangePage />} />
-        <Route path="messages" element={<MessagesPage />} />
+        <Route path="messages" element={<ProfessionalsPage />} />
         <Route path="payments" element={<PaymentsPage />} />
         <Route path="profile" element={<HireProfile />} />
         <Route path="terms" element={<TermsPage />} />
         <Route path="requests/:id/edit" element={<EditRequestPage />} />
+        <Route path="request" element={<RequestCustomPage />} />
+        <Route path="professionals" element={<ProfessionalsPage />} />
       </Route>
-      <Route path="/admin" element={<AdminLayout />}>
+      <Route path="/admin" element={<StaffGuard><AdminLayout /></StaffGuard>}>
         <Route index element={<AdminAnalytics />} />
         <Route path="messages" element={<AdminMessages />} />
       </Route>
-      <Route path="/support" element={<SupportLayout />}>
+      <Route path="/support" element={<StaffGuard><SupportLayout /></StaffGuard>}>
         <Route index element={<SupportTickets />} />
         <Route path="chat" element={<SupportChat />} />
       </Route>
@@ -113,6 +121,7 @@ export default function App() {
         <Route path="messages" element={<ProviderMessages />} />
         <Route path="profile" element={<ProfileSettings />} />
       </Route>
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )
 }
