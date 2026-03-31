@@ -1,10 +1,11 @@
 import { useNavigate, Link } from 'react-router-dom'
+import { useAuth } from '@clerk/clerk-react'
 import { useToast } from '@/context/ToastContext'
+import { fetchApiJson } from '@/lib/api'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Send, ArrowLeft } from 'lucide-react'
-import { addRequest } from '@/lib/serviceRequestsStorage'
 
 const CATEGORY_OPTIONS = [
   { value: 'plumbing', label: 'Plumbing' },
@@ -21,19 +22,34 @@ const CATEGORY_OPTIONS = [
 export default function RequestCustomPage() {
   const navigate = useNavigate()
   const toast = useToast()
+  const { getToken } = useAuth()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     const form = e.target
-    addRequest({
+    const preferredDate = form.preferredDate.value || null
+    const body = {
       category: form.category.value,
       description: form.description.value.trim(),
-      preferredDate: form.preferredDate.value || null,
+      preferredDate: preferredDate || null,
       budgetMin: form.budget.value ? parseInt(form.budget.value, 10) : null,
-      createdByUserId: 'hire-user',
-    })
-    toast.success('Request submitted.')
-    navigate('/hiredashboard/bookings?tab=requests')
+      locationText: null,
+    }
+    try {
+      await fetchApiJson(
+        '/api/custom-requests',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        },
+        getToken
+      )
+      toast.success('Request submitted.')
+      navigate('/hiredashboard/bookings?tab=requests')
+    } catch (err) {
+      toast.error(err.data?.error || err.message || 'Could not submit request')
+    }
   }
 
   return (

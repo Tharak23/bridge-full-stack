@@ -1,23 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { fetchApiJson } from '@/lib/api'
+import { fetchApi, fetchApiJson } from '@/lib/api'
 import { useAuth } from '@clerk/clerk-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { getBookings } from '@/lib/bookingsStorage'
-import { getRequests, assignProvider, cancelRequest, deleteRequest } from '@/lib/serviceRequestsStorage'
 import { useToast } from '@/context/ToastContext'
 import PageLoader from '@/components/PageLoader'
 import { Calendar, ChevronRight, User, CheckCircle, Pencil, XCircle, Trash2 } from 'lucide-react'
 
-const DUMMY_APPLICANTS = [
-  { providerId: 'pro-1', providerName: 'Ajay K.', message: 'I can help with this. 5+ years experience.', rating: 4.9 },
-  { providerId: 'pro-2', providerName: 'Priya M.', message: 'Available on your preferred date.', rating: 4.8 },
-]
-
 function formatDate(d) {
   if (!d) return '—'
   const date = typeof d === 'string' ? new Date(d) : d
+  if (Number.isNaN(date.getTime())) return '—'
   return date.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })
 }
 
@@ -44,21 +39,41 @@ export default function BookingsPage() {
   const toast = useToast()
   const [apiBookings, setApiBookings] = useState([])
   const [loading, setLoading] = useState(true)
-  const [requestsKey, setRequestsKey] = useState(0)
+  const [apiRequests, setApiRequests] = useState([])
+  const [reqLoading, setReqLoading] = useState(true)
 
   const localBookings = getBookings()
-  const serviceRequests = getRequests()
+
+  const loadBookings = useCallback(async () => {
+    try {
+      const data = await fetchApiJson('/api/bookings/my', {}, getToken)
+      if (Array.isArray(data)) setApiBookings(data)
+    } catch {
+      setApiBookings([])
+    } finally {
+      setLoading(false)
+    }
+  }, [getToken])
+
+  const loadRequests = useCallback(async () => {
+    setReqLoading(true)
+    try {
+      const data = await fetchApiJson('/api/custom-requests/my', {}, getToken)
+      if (Array.isArray(data)) setApiRequests(data)
+    } catch {
+      setApiRequests([])
+    } finally {
+      setReqLoading(false)
+    }
+  }, [getToken])
 
   useEffect(() => {
-    let cancelled = false
-    fetchApiJson('/api/bookings/my', {}, getToken)
-      .then((data) => {
-        if (!cancelled && Array.isArray(data)) setApiBookings(data)
-      })
-      .catch(() => {})
-      .finally(() => { if (!cancelled) setLoading(false) })
-    return () => { cancelled = true }
-  }, [getToken])
+    loadBookings()
+  }, [loadBookings])
+
+  useEffect(() => {
+    if (tab === 'requests') loadRequests()
+  }, [tab, loadRequests])
 
   const now = new Date()
   const thisMonth = now.getMonth()
@@ -78,14 +93,15 @@ export default function BookingsPage() {
     })),
     ...apiBookings.filter((b) => !localBookings.some((lb) => lb.id === b.id)).map((b) => ({
       ...b,
-      scheduledDate: b.scheduled_at ? formatDate(b.scheduled_at) : b.scheduledDate,
+      scheduledDate: b.scheduledAt ? formatDate(b.scheduledAt) : b.scheduledDate,
       locationText: b.locationText || b.location_text || '—',
+      providerName: b.providerName || '',
       source: 'api',
     })),
   ]
   const allBookings = (allBookingsRaw.length > 0 ? allBookingsRaw : DUMMY_BOOKINGS_FALLBACK).sort((a, b) => {
-    const da = a.serviceDate || a.scheduled_at || a.createdAt
-    const db = b.serviceDate || b.scheduled_at || b.createdAt
+    const da = a.serviceDate || a.scheduledAt || a.createdAt
+    const db = b.serviceDate || b.scheduledAt || b.createdAt
     if (!da) return 1
     if (!db) return -1
     return new Date(db) - new Date(da)
@@ -93,30 +109,55 @@ export default function BookingsPage() {
 
   const bookingsThisMonth = allBookings.filter((b) => {
     if (b.source === 'dummy') return false
-    const d = b.serviceDate || b.scheduled_at
+    const d = b.serviceDate || b.scheduledAt
     if (!d) return false
     const dt = new Date(d)
     return dt.getMonth() === thisMonth && dt.getFullYear() === thisYear
   })
 
-  const handleAccept = (requestId, providerId, providerName) => {
-    assignProvider(requestId, providerId, providerName)
-    setRequestsKey((k) => k + 1)
-    toast.success('Provider assigned.')
+  const handleSelectProvider = async (requestId, applicationId) => {
+    try {
+      await fetchApiJson(
+        `/api/custom-requests/${requestId}/select-provider`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ applicationId }),
+        },
+        getToken
+      )
+      toast.success('Professional assigned. Check My Bookings for the confirmed job.')
+      await loadRequests()
+      await loadBookings()
+    } catch (e) {
+      toast.error(e.data?.error || e.message || 'Could not assign provider')
+    }
   }
 
-  const handleCancelRequest = (req) => {
+  const handleCancelRequest = async (req) => {
     if (!window.confirm('Cancel this request? You can create a new one later.')) return
-    cancelRequest(req.id)
-    setRequestsKey((k) => k + 1)
-    toast.success('Request cancelled.')
+    try {
+      await fetchApiJson(`/api/custom-requests/${req.id}/cancel`, { method: 'PATCH' }, getToken)
+      toast.success('Request cancelled.')
+      loadRequests()
+    } catch (e) {
+      toast.error(e.data?.error || e.message || 'Failed')
+    }
   }
 
-  const handleDeleteRequest = (req) => {
+  const handleDeleteRequest = async (req) => {
     if (!window.confirm('Delete this request permanently?')) return
-    deleteRequest(req.id)
-    setRequestsKey((k) => k + 1)
-    toast.success('Request deleted.')
+    try {
+      const res = await fetchApi(`/api/custom-requests/${req.id}`, { method: 'DELETE' }, getToken)
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error || res.statusText)
+      }
+      toast.success('Request deleted.')
+      loadRequests()
+    } catch (e) {
+      toast.error(e.message || 'Failed')
+    }
   }
 
   if (loading && allBookings.length === 0 && tab === 'bookings') {
@@ -164,7 +205,9 @@ export default function BookingsPage() {
 
       {tab === 'requests' ? (
         <div className="space-y-4">
-          {serviceRequests.length === 0 ? (
+          {reqLoading ? (
+            <PageLoader message="Loading your requests…" />
+          ) : apiRequests.length === 0 ? (
             <Card className="p-12 text-center">
               <p className="text-slate-500 mb-4">No custom requests yet. Describe what you need and professionals can apply.</p>
               <Link to="/hiredashboard/request">
@@ -172,70 +215,86 @@ export default function BookingsPage() {
               </Link>
             </Card>
           ) : (
-            serviceRequests.map((req) => (
-              <Card key={`${req.id}-${requestsKey}`} className="overflow-hidden">
-                <div className="p-5">
-                  <div className="flex flex-wrap items-center gap-2 mb-2">
-                    <span className="font-bold text-slate-900">{req.description || 'Custom request'}</span>
-                    <span className="text-xs text-slate-500 capitalize bg-slate-100 px-2 py-0.5 rounded">{req.category.replace(/_/g, ' ')}</span>
-                    {req.status === 'assigned' && (
-                      <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">Assigned</span>
-                    )}
-                    {req.status === 'cancelled' && (
-                      <span className="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded">Cancelled</span>
+            apiRequests.map((req) => {
+              const apps = Array.isArray(req.applications) ? req.applications : []
+              const pendingApps = apps.filter((a) => a.status === 'pending')
+              return (
+                <Card key={req.id} className="overflow-hidden">
+                  <div className="p-5">
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <span className="font-bold text-slate-900">{req.description || 'Custom request'}</span>
+                      <span className="text-xs text-slate-500 capitalize bg-slate-100 px-2 py-0.5 rounded">
+                        {(req.category || 'other').replace(/_/g, ' ')}
+                      </span>
+                      {req.status === 'assigned' && (
+                        <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">Assigned</span>
+                      )}
+                      {req.status === 'cancelled' && (
+                        <span className="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded">Cancelled</span>
+                      )}
+                      {req.status === 'open' && (
+                        <>
+                          <Link
+                            to={`/hiredashboard/requests/${req.id}/edit`}
+                            className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-600 hover:text-teal-700"
+                          >
+                            <Pencil className="h-3.5 w-3.5" /> Edit
+                          </Link>
+                          <button type="button" onClick={() => handleCancelRequest(req)} className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 hover:text-amber-700">
+                            <XCircle className="h-3.5 w-3.5" /> Cancel
+                          </button>
+                          <button type="button" onClick={() => handleDeleteRequest(req)} className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600 hover:text-red-700">
+                            <Trash2 className="h-3.5 w-3.5" /> Delete
+                          </button>
+                        </>
+                      )}
+                    </div>
+                    <p className="text-sm text-slate-500 mb-3">
+                      Preferred: {req.preferredDate ? formatDate(req.preferredDate) : 'Any'} · Budget:{' '}
+                      {req.budgetMin != null ? `₹${req.budgetMin}` : '—'}
+                    </p>
+                    {req.status === 'assigned' && req.assignedProviderName && (
+                      <div className="rounded-lg bg-emerald-50 border border-emerald-100 p-3 mb-2">
+                        <p className="text-sm text-emerald-800 font-medium flex items-center gap-1">
+                          <CheckCircle className="h-4 w-4 shrink-0" />
+                          Assigned professional: <strong>{req.assignedProviderName}</strong>
+                        </p>
+                        {req.linkedBookingId && (
+                          <p className="text-xs text-emerald-700 mt-1">
+                            Confirmed booking ID: <code className="bg-white/80 px-1 rounded">{req.linkedBookingId}</code> — also listed under the Bookings tab.
+                          </p>
+                        )}
+                      </div>
                     )}
                     {req.status === 'open' && (
-                      <>
-                        <Link
-                          to={`/hiredashboard/requests/${req.id}/edit`}
-                          className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-600 hover:text-teal-700"
-                        >
-                          <Pencil className="h-3.5 w-3.5" /> Edit
-                        </Link>
-                        <button type="button" onClick={() => handleCancelRequest(req)} className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 hover:text-amber-700">
-                          <XCircle className="h-3.5 w-3.5" /> Cancel
-                        </button>
-                        <button type="button" onClick={() => handleDeleteRequest(req)} className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600 hover:text-red-700">
-                          <Trash2 className="h-3.5 w-3.5" /> Delete
-                        </button>
-                      </>
+                      <div className="mt-4 pt-4 border-t border-slate-100">
+                        <p className="text-sm font-medium text-slate-700 mb-2">Professionals who applied</p>
+                        {pendingApps.length === 0 ? (
+                          <p className="text-sm text-slate-500">No applications yet. Providers see your request on their dashboard.</p>
+                        ) : (
+                          pendingApps.map((a) => (
+                            <div key={a.id} className="flex items-center justify-between gap-4 p-3 rounded-lg bg-slate-50 mb-2">
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-semibold shrink-0">
+                                  <User className="h-5 w-5" />
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="font-medium text-slate-900">{a.providerName || 'Professional'}</p>
+                                  <p className="text-xs text-slate-500 truncate">{a.message || 'Applied to your request'}</p>
+                                </div>
+                              </div>
+                              <Button size="sm" className="shrink-0" onClick={() => handleSelectProvider(req.id, a.id)}>
+                                Accept
+                              </Button>
+                            </div>
+                          ))
+                        )}
+                      </div>
                     )}
                   </div>
-                  <p className="text-sm text-slate-500 mb-3">
-                    Preferred: {req.preferredDate ? formatDate(req.preferredDate) : 'Any'} · Budget: {req.budgetMin ? `₹${req.budgetMin}` : '—'}
-                  </p>
-                  {req.status === 'assigned' && req.assignedProviderName && (
-                    <p className="text-sm text-emerald-700 font-medium flex items-center gap-1">
-                      <CheckCircle className="h-4 w-4" /> {req.assignedProviderName}
-                    </p>
-                  )}
-                  {req.status === 'open' && (
-                    <div className="mt-4 pt-4 border-t border-slate-100">
-                      <p className="text-sm font-medium text-slate-700 mb-2">Applicants</p>
-                      {(req.applicants?.length ? req.applicants : DUMMY_APPLICANTS).map((a) => (
-                        <div key={a.providerId} className="flex items-center justify-between gap-4 p-3 rounded-lg bg-slate-50 mb-2">
-                          <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-semibold">
-                              <User className="h-5 w-5" />
-                            </div>
-                            <div>
-                              <p className="font-medium text-slate-900">{a.providerName}</p>
-                              <p className="text-xs text-slate-500">{a.message || `★ ${a.rating || 4.8}`}</p>
-                            </div>
-                          </div>
-                          <Button size="sm" onClick={() => handleAccept(req.id, a.providerId, a.providerName)}>
-                            Accept
-                          </Button>
-                        </div>
-                      ))}
-                      {(!req.applicants?.length && DUMMY_APPLICANTS.length) ? (
-                        <p className="text-xs text-slate-500 mt-2">Professionals can apply from Available jobs. Showing suggested pros.</p>
-                      ) : null}
-                    </div>
-                  )}
-                </div>
-              </Card>
-            ))
+                </Card>
+              )
+            })
           )}
         </div>
       ) : (
@@ -254,6 +313,9 @@ export default function BookingsPage() {
                 <div className="p-5 flex flex-col sm:flex-row sm:items-center gap-4">
                   <div className="min-w-0 flex-1">
                     <h2 className="font-bold text-slate-900 text-lg">{b.serviceName}</h2>
+                    {b.providerName && (
+                      <p className="text-sm text-teal-700 font-medium mt-0.5">Assigned: {b.providerName}</p>
+                    )}
                     <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
                       <span className="text-slate-500">Location</span>
                       <span className="text-slate-700">{b.locationText}</span>

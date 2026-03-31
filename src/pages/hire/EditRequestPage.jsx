@@ -1,10 +1,13 @@
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { getRequestById, updateRequest } from '@/lib/serviceRequestsStorage'
+import { useAuth } from '@clerk/clerk-react'
+import { useEffect, useState } from 'react'
+import { fetchApiJson } from '@/lib/api'
 import { useToast } from '@/context/ToastContext'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ArrowLeft } from 'lucide-react'
+import PageLoader from '@/components/PageLoader'
 
 const CATEGORY_OPTIONS = [
   { value: 'plumbing', label: 'Plumbing' },
@@ -22,7 +25,32 @@ export default function EditRequestPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const toast = useToast()
-  const request = getRequestById(id)
+  const { getToken } = useAuth()
+  const [request, setRequest] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const data = await fetchApiJson(`/api/custom-requests/${id}`, {}, getToken)
+        if (!cancelled) setRequest(data)
+      } catch {
+        if (!cancelled) setRequest(null)
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    })()
+    return () => { cancelled = true }
+  }, [id, getToken])
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-10 max-w-2xl">
+        <PageLoader message="Loading request…" />
+      </div>
+    )
+  }
 
   if (!request) {
     return (
@@ -37,18 +65,48 @@ export default function EditRequestPage() {
     )
   }
 
-  const handleSubmit = (e) => {
+  if (request.status !== 'open') {
+    return (
+      <div className="container mx-auto px-4 py-10 max-w-2xl">
+        <Card className="p-8 text-center">
+          <p className="text-slate-600 mb-4">Only open requests can be edited.</p>
+          <Link to="/hiredashboard/bookings?tab=requests">
+            <Button variant="outline">Back to requests</Button>
+          </Link>
+        </Card>
+      </div>
+    )
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     const form = e.target
-    updateRequest(id, {
+    const preferredDate = form.preferredDate.value || null
+    const body = {
       category: form.category.value,
       description: form.description.value.trim(),
-      preferredDate: form.preferredDate.value || null,
+      preferredDate: preferredDate || null,
       budgetMin: form.budget.value ? parseInt(form.budget.value, 10) : null,
-    })
-    toast.success('Request updated.')
-    navigate('/hiredashboard/bookings?tab=requests')
+      locationText: request.locationText || null,
+    }
+    try {
+      await fetchApiJson(
+        `/api/custom-requests/${id}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        },
+        getToken
+      )
+      toast.success('Request updated.')
+      navigate('/hiredashboard/bookings?tab=requests')
+    } catch (err) {
+      toast.error(err.data?.error || err.message || 'Could not update')
+    }
   }
+
+  const pref = request.preferredDate ? request.preferredDate.slice(0, 10) : ''
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-2xl">
@@ -87,12 +145,7 @@ export default function EditRequestPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Preferred date</label>
-              <Input
-                type="date"
-                name="preferredDate"
-                defaultValue={request.preferredDate ? request.preferredDate.slice(0, 10) : ''}
-                className="w-full"
-              />
+              <Input type="date" name="preferredDate" defaultValue={pref} className="w-full" />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Budget (₹)</label>

@@ -1,12 +1,13 @@
 import { useState, useMemo } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { useAuth } from '@clerk/clerk-react'
 import { motion } from 'framer-motion'
 import { Wrench, Zap, Wind, Sparkles, Scissors, Tv, BookOpen, Briefcase, MoreHorizontal, Send } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DUMMY_CATEGORIES, FEATURED_NEAR_YOU, HOW_IT_WORKS, POPULAR_PROFESSIONALS } from '@/data/hireDummy'
-import { addRequest } from '@/lib/serviceRequestsStorage'
+import { fetchApiJson } from '@/lib/api'
 import { useToast } from '@/context/ToastContext'
 
 const iconMap = {
@@ -48,6 +49,7 @@ const CATEGORY_OPTIONS = [
 export default function HireHome() {
   const navigate = useNavigate()
   const toast = useToast()
+  const { getToken } = useAuth()
   const [searchParams] = useSearchParams()
   const searchQ = (searchParams.get('q') || '').trim().toLowerCase()
   const [categories] = useState(DUMMY_CATEGORIES)
@@ -86,21 +88,37 @@ export default function HireHome() {
     [searchQ]
   )
 
-  const handleSubmitRequest = (e) => {
+  const handleSubmitRequest = async (e) => {
     e.preventDefault()
-    addRequest({
-      category: requestCategory,
-      description: requestDesc,
-      preferredDate: requestDate || null,
-      budgetMin: requestBudget ? parseInt(requestBudget, 10) : null,
-      createdByUserId: 'hire-user',
-    })
-    setRequestSent(true)
-    setRequestDesc('')
-    setRequestDate('')
-    setRequestBudget('')
-    toast.success('Request submitted. View in My Bookings → Services requested.')
-    setTimeout(() => navigate('/hiredashboard/bookings?tab=requests'), 500)
+    if (!requestDesc.trim()) {
+      toast.error('Please describe what you need.')
+      return
+    }
+    try {
+      await fetchApiJson(
+        '/api/custom-requests',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            category: requestCategory,
+            description: requestDesc.trim(),
+            preferredDate: requestDate || null,
+            budgetMin: requestBudget ? parseInt(requestBudget, 10) : null,
+            locationText: null,
+          }),
+        },
+        getToken
+      )
+      setRequestSent(true)
+      setRequestDesc('')
+      setRequestDate('')
+      setRequestBudget('')
+      toast.success('Request submitted. View in My Bookings → Services requested.')
+      setTimeout(() => navigate('/hiredashboard/bookings?tab=requests'), 500)
+    } catch (err) {
+      toast.error(err.data?.error || err.message || 'Could not submit request')
+    }
   }
 
   return (
