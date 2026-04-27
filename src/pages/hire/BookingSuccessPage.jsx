@@ -1,12 +1,25 @@
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { CheckCircle2 } from 'lucide-react'
+import { upsertPaymentByBookingId } from '@/lib/paymentsStorage'
 
 export default function BookingSuccessPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const booking = location.state?.booking
+
+  useEffect(() => {
+    if (!booking?.id) return
+    upsertPaymentByBookingId({
+      bookingId: booking.id,
+      serviceName: booking.serviceName,
+      location: booking.locationText,
+      amount: booking.total ?? booking.price ?? 0,
+      status: 'Paid',
+    })
+  }, [booking])
 
   if (!booking) {
     return (
@@ -43,7 +56,7 @@ export default function BookingSuccessPage() {
             </div>
             <div className="flex justify-between">
               <dt className="text-slate-500">Amount</dt>
-              <dd className="text-slate-900 font-bold text-blue-600">₹{booking.total} (pay after service)</dd>
+              <dd className="text-slate-900 font-bold text-blue-600">₹{booking.total} (payment successful)</dd>
             </div>
           </dl>
         </div>
