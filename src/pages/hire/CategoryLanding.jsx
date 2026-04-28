@@ -16,22 +16,26 @@ export default function CategoryLanding() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-10 max-w-5xl">
+    <div className="container mx-auto max-w-6xl px-4 py-8">
       {/* Breadcrumb */}
-      <nav className="text-sm text-slate-500 mb-6">
-        <Link to="/hiredashboard" className="hover:text-teal-600">Home</Link>
+      <nav className="mb-5 text-sm text-[var(--color-text-muted)]">
+        <Link to="/hiredashboard" className="hover:text-[var(--color-primary)]">Home</Link>
         <span className="mx-2">/</span>
-        <span className="text-slate-700 capitalize">{categoryName}</span>
+        <span className="capitalize text-[var(--color-text)]">{categoryName}</span>
       </nav>
 
       {/* Blog-like intro */}
-      <section className="mb-12">
-        <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">{blog.title}</h1>
-        <div className="flex flex-col md:flex-row gap-8">
-          <div className="flex-1">
-            <p className="text-slate-600 text-lg leading-relaxed">{blog.intro}</p>
+      <section className="mb-10 rounded-[2rem] border border-[var(--color-border)] bg-white p-6 shadow-[var(--shadow-lg)] md:p-8">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-[1.15fr_0.85fr]">
+          <div className="flex flex-col justify-between">
+            <div>
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-[var(--color-primary)]">Service category</p>
+              <h1 className="mb-4 text-3xl font-black text-[var(--color-text)] md:text-4xl">{blog.title}</h1>
+              <p className="text-lg leading-relaxed text-[var(--color-text-muted)]">{blog.intro}</p>
+            </div>
+            <p className="mt-6 text-sm text-[var(--color-text-muted)]">Browse service packages below and continue to booking.</p>
           </div>
-          <div className="w-full md:w-80 h-48 rounded-xl overflow-hidden bg-slate-200 shrink-0">
+          <div className="h-56 w-full overflow-hidden rounded-[1.5rem] border border-[var(--color-border)] bg-slate-200 md:h-auto">
             <img
               src={`https://picsum.photos/seed/${category}/320/192`}
               alt=""
@@ -43,20 +47,22 @@ export default function CategoryLanding() {
 
       {/* Service options (problems) - Upwork style */}
       <section>
-        <h2 className="text-xl font-bold text-slate-900 mb-2">Services we offer</h2>
-        <p className="text-slate-500 mb-6">Choose the service you need. Click Add to select tier and book.</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <h2 className="mb-2 text-2xl font-black text-[var(--color-text)]">Services we offer</h2>
+        <p className="mb-6 text-[var(--color-text-muted)]">Choose your service. Click Add to select tier and continue booking.</p>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {options.map((opt) => (
-            <Card key={opt.slug} hover className="overflow-hidden">
-              <div className="p-5 flex flex-col">
-                <h3 className="font-semibold text-slate-900 text-lg">{opt.name}</h3>
-                <p className="text-sm text-slate-500 mt-1 flex items-center gap-1">
+            <Card key={opt.slug} hover className="overflow-hidden border border-[var(--color-border)]">
+              <div className="grid grid-cols-[1fr_auto] items-center gap-4 p-5">
+                <div>
+                  <h3 className="text-lg font-semibold text-[var(--color-text)]">{opt.name}</h3>
+                  <p className="mt-1 flex items-center gap-1 text-sm text-[var(--color-text-muted)]">
                   <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                   {opt.rating} ({opt.reviews.toLocaleString()} reviews)
                 </p>
-                <p className="text-lg font-bold text-teal-600 mt-2">₹{opt.price}</p>
+                  <p className="mt-2 text-xl font-black text-[var(--color-primary)]">₹{opt.price}</p>
+                </div>
                 <Button
-                  className="w-full mt-4 rounded-lg gap-2"
+                  className="rounded-full gap-2 px-5"
                   onClick={() => handleAdd(opt.slug)}
                 >
                   <Plus className="h-4 w-4" /> Add

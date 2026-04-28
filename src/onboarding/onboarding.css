@@ -3,20 +3,22 @@
 .onboarding-page {
   --font-heading: 'Matter', 'Outfit', 'DM Sans', system-ui, sans-serif;
   --font-body: 'DM Sans', system-ui, sans-serif;
-  --color-bg: #f0f0f0;
+  --color-bg: #f7f2f3;
   --color-surface: #ffffff;
-  --color-text: #0a0a0a;
-  --color-text-muted: #525252;
-  --color-accent: #7c3aed;
-  --color-accent-soft: #ede9fe;
-  --color-border: #d4d4d4;
-  --radius: 12px;
-  --radius-lg: 16px;
-  --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --color-text: #111111;
+  --color-text-muted: #5f5f65;
+  --color-accent: #c1121f;
+  --color-accent-soft: #fff1f2;
+  --color-border: #ead7da;
+  --radius: 16px;
+  --radius-lg: 24px;
+  --shadow: 0 10px 28px rgba(17, 17, 17, 0.08);
+  --shadow-card: 0 18px 42px rgba(17, 17, 17, 0.1);
   min-height: 100vh;
   font-family: var(--font-body);
-  background: var(--color-bg);
+  background:
+    radial-gradient(circle at top, rgba(193, 18, 31, 0.12), transparent 28%),
+    linear-gradient(180deg, #fffdfd 0%, var(--color-bg) 100%);
   padding: clamp(1rem, 4vw, 2rem);
   box-sizing: border-box;
 }
@@ -25,12 +27,18 @@
   max-width: 520px;
   margin: 0 auto;
   width: 100%;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--color-border);
+  border-radius: 32px;
+  box-shadow: var(--shadow-card);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  backdrop-filter: blur(14px);
 }
 
 .onboarding-page .progress-bar {
-  height: 4px;
-  background: var(--color-border);
-  border-radius: 2px;
+  height: 6px;
+  background: #f4e4e6;
+  border-radius: 999px;
   margin-bottom: 1.5rem;
   overflow: hidden;
   max-width: 520px;
@@ -40,8 +48,8 @@
 
 .onboarding-page .progress-fill {
   height: 100%;
-  background: var(--color-accent);
-  border-radius: 2px;
+  background: linear-gradient(90deg, #111111 0%, var(--color-accent) 100%);
+  border-radius: 999px;
   transition: width 0.3s ease;
 }
 
@@ -78,7 +86,7 @@
   width: 100%;
   padding: 1.25rem 1.5rem;
   background: var(--color-surface);
-  border: 2px solid var(--color-border);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   cursor: pointer;
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
@@ -95,7 +103,7 @@
 .onboarding-page .card-option.selected {
   border-color: var(--color-accent);
   background: var(--color-accent-soft);
-  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.25);
+  box-shadow: 0 0 0 3px rgba(193, 18, 31, 0.12);
 }
 
 .onboarding-page .card-option .card-content h3 {
@@ -125,14 +133,14 @@
 /* Professional type: grid of chips */
 .onboarding-page .option-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: 1fr;
   gap: 0.75rem;
   width: 100%;
   justify-items: stretch;
 }
 
 .onboarding-page .option-chip {
-  padding: 1rem;
+  padding: 1rem 1.1rem;
   background: var(--color-surface);
   border: 2px solid var(--color-border);
   border-radius: var(--radius);
@@ -142,20 +150,20 @@
   color: var(--color-text);
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-  text-align: center;
+  text-align: left;
   box-shadow: var(--shadow);
 }
 
 .onboarding-page .option-chip:hover {
   border-color: var(--color-accent);
-  background: #faf5ff;
+  background: #fff7f8;
 }
 
 .onboarding-page .option-chip.selected {
   border-color: var(--color-accent);
   background: var(--color-accent-soft);
   color: var(--color-accent);
-  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+  box-shadow: 0 0 0 3px rgba(193, 18, 31, 0.12);
 }
 
 .onboarding-page .btn-continue {
@@ -168,7 +176,7 @@
   font-size: 1rem;
   font-weight: 600;
   color: #fff;
-  background: var(--color-accent);
+  background: linear-gradient(135deg, #111111 0%, var(--color-accent) 100%);
   border: none;
   border-radius: var(--radius);
   cursor: pointer;
@@ -208,7 +216,7 @@
   font-size: 1rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  background: var(--color-surface);
+  background: #fff8f8;
   box-sizing: border-box;
 }
 
@@ -218,7 +226,8 @@
 }
 
 .onboarding-page .form-group input:focus,
-.onboarding-page .form-group textarea:focus {
+.onboarding-page .form-group textarea:focus,
+.onboarding-page .form-group select:focus {
   outline: none;
   border-color: var(--color-accent);
   box-shadow: 0 0 0 2px var(--color-accent-soft);
@@ -226,12 +235,13 @@
 
 .onboarding-page .input-row {
   display: flex;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 0.7rem;
   align-items: stretch;
 }
 
 .onboarding-page .input-row .country-select {
-  width: 100px;
+  width: 100%;
   flex-shrink: 0;
 }
 
@@ -299,7 +309,7 @@
   height: 100px;
   border-radius: 50%;
   background: var(--color-bg);
-  border: 2px dashed var(--color-border);
+  border: 2px dashed #e3b8bd;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -346,17 +356,19 @@
 
 /* Services: multi-select chips + Other text */
 .onboarding-page .services-chip-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 0.5rem;
   margin-bottom: 1rem;
 }
 
 .onboarding-page .service-chip {
-  padding: 0.5rem 1rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.72rem 1rem;
   background: var(--color-surface);
   border: 2px solid var(--color-border);
-  border-radius: 999px;
+  border-radius: 12px;
   font-family: var(--font-body);
   font-size: 0.875rem;
   color: var(--color-text);
@@ -383,7 +395,7 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 1.25rem;
+  padding: 1rem;
   margin-bottom: 1.25rem;
   box-shadow: var(--shadow);
 }
@@ -398,11 +410,12 @@
 
 .onboarding-page .toggle-row {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
   padding: 0.75rem 0;
   border-bottom: 1px solid var(--color-border);
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .onboarding-page .toggle-row:last-child {
@@ -458,6 +471,12 @@
 .onboarding-page .time-inputs input {
   max-width: 110px;
   padding: 0.5rem;
+}
+
+@media (min-width: 700px) {
+  .onboarding-page .services-chip-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .onboarding-page .char-count {

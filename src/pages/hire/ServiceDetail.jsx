@@ -56,47 +56,47 @@ export default function ServiceDetail() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-10 max-w-4xl">
+    <div className="container mx-auto max-w-5xl px-4 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">{service.name}</h1>
-            <p className="text-slate-500 mt-2 flex items-center gap-2 flex-wrap">
+            <h1 className="text-3xl font-black text-[var(--color-text)]">{service.name}</h1>
+            <p className="mt-2 flex flex-wrap items-center gap-2 text-[var(--color-text-muted)]">
               <span className="inline-flex items-center gap-1">
                 <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                 {service.rating}
               </span>
               <span>({Number(service.reviews || 0).toLocaleString()} reviews)</span>
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-sm font-medium text-emerald-800">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-primary-muted)] px-2.5 py-0.5 text-sm font-medium text-[var(--color-primary)]">
                 {professionalsCount} professional{professionalsCount !== 1 ? 's' : ''} available
               </span>
             </p>
           </div>
-          <Card>
+          <Card className="border border-[var(--color-border)]">
             <CardHeader>
-              <h2 className="font-semibold text-slate-900">What you get</h2>
+              <h2 className="font-semibold text-[var(--color-text)]">What you get</h2>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm text-slate-600">
+            <CardContent className="space-y-3 text-sm text-[var(--color-text-muted)]">
               <p className="flex items-start gap-2">
-                <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-primary)]" />
                 Inspection & quote. Repair begins after your approval.
               </p>
               <p className="flex items-start gap-2">
-                <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-primary)]" />
                 Professional technicians available at your convenience.
               </p>
             </CardContent>
           </Card>
         </div>
         <div>
-          <Card className="sticky top-24 shadow-lg border-slate-200">
+          <Card className="sticky top-20 border border-[var(--color-border)] shadow-lg">
             <CardContent className="p-6 space-y-5">
               <div>
-                <span className="text-3xl font-bold text-slate-900">₹{service.price}</span>
-                <span className="text-slate-500 text-sm ml-1">/ service</span>
+                <span className="text-3xl font-black text-[var(--color-text)]">₹{service.price}</span>
+                <span className="ml-1 text-sm text-[var(--color-text-muted)]">/ service</span>
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-700">Quantity</label>
+                <label className="text-sm font-medium text-[var(--color-text)]">Quantity</label>
                 <Input
                   type="number"
                   min={1}
@@ -105,7 +105,7 @@ export default function ServiceDetail() {
                   className="mt-2"
                 />
               </div>
-              <Button className="w-full rounded-xl h-11 text-base" variant="default" onClick={handleAdd}>
+              <Button className="h-12 w-full rounded-xl text-base" variant="default" onClick={handleAdd}>
                 Add to cart
               </Button>
               <Button

@@ -56,20 +56,20 @@ export default function RequestCustomPage() {
     <div className="container mx-auto px-4 py-10 max-w-2xl">
       <Link
         to="/hiredashboard/bookings?tab=requests"
-        className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-6 text-sm font-medium"
+        className="mb-6 inline-flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-white px-4 py-2 text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
       >
         <ArrowLeft className="h-4 w-4" /> Back to Services requested
       </Link>
-      <h1 className="text-2xl font-bold text-slate-900 mb-2">Request custom work</h1>
-      <p className="text-slate-500 mb-6">Describe the work you need. Professionals can apply and you choose who to assign.</p>
-      <Card className="overflow-hidden border border-slate-200/80 shadow-sm">
+      <h1 className="mb-2 text-3xl font-black text-[var(--color-text)]">Request custom work</h1>
+      <p className="mb-6 text-[var(--color-text-muted)]">Describe the work you need. Professionals can apply and you choose who to assign.</p>
+      <Card className="overflow-hidden border border-[var(--color-border)] shadow-[var(--shadow-lg)]">
         <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-5">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Category</label>
+            <label className="mb-2 block text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-text-muted)]">Category</label>
             <select
               name="category"
               defaultValue="plumbing"
-              className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500"
+              className="w-full rounded-2xl border border-[var(--color-border)] bg-[#fff8f8] px-4 py-3 text-[var(--color-text)] focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[rgba(193,18,31,0.14)]"
             >
               {CATEGORY_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>{o.label}</option>
@@ -77,27 +77,27 @@ export default function RequestCustomPage() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">What do you need?</label>
+            <label className="mb-2 block text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-text-muted)]">What do you need?</label>
             <textarea
               name="description"
               placeholder="Describe the work..."
               rows={3}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 resize-none"
+              className="w-full resize-none rounded-[1.5rem] border border-[var(--color-border)] bg-[#fff8f8] px-4 py-3 text-[var(--color-text)] placeholder:text-[var(--color-text-subtle)] focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[rgba(193,18,31,0.14)]"
               required
             />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Preferred date</label>
-              <Input type="date" name="preferredDate" className="w-full" />
+              <label className="mb-2 block text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-text-muted)]">Preferred date</label>
+              <Input type="date" name="preferredDate" className="w-full bg-[#fff8f8]" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Budget (₹)</label>
-              <Input type="number" name="budget" placeholder="Optional" min={0} className="w-full" />
+              <label className="mb-2 block text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-text-muted)]">Budget (₹)</label>
+              <Input type="number" name="budget" placeholder="Optional" min={0} className="w-full bg-[#fff8f8]" />
             </div>
           </div>
           <div className="pt-1">
-            <Button type="submit" className="gap-2">
+            <Button type="submit" className="gap-2 rounded-full px-6">
               <Send className="h-4 w-4" /> Submit request
             </Button>
           </div>

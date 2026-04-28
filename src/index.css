@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* Bridge — Professional SaaS design system (Stripe / Linear / Vercel style) */
 :root {
   font-family: 'DM Sans', system-ui, sans-serif;
   line-height: 1.5;
@@ -10,42 +9,35 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Primary: Teal (no purple, no gradients) */
-  --color-primary: #0d9488;
-  --color-primary-hover: #0f766e;
-  --color-primary-muted: #ccfbf1;
-  /* Secondary: Slate */
-  --color-secondary: #64748b;
-  --color-secondary-foreground: #1e293b;
-  --color-surface: #f8fafc;
+  --color-primary: #c1121f;
+  --color-primary-hover: #990f19;
+  --color-primary-muted: #ffe2e5;
+  --color-secondary: #3f3f46;
+  --color-secondary-foreground: #111111;
+  --color-surface: #f7f4f4;
   --color-surface-elevated: #ffffff;
-  --color-border: #e2e8f0;
-  --color-border-focus: #0d9488;
-  /* Accent: Emerald (success, positive) */
-  --color-accent: #10b981;
-  --color-accent-hover: #059669;
-  --color-accent-muted: #d1fae5;
-  /* Semantic */
-  --color-destructive: #ef4444;
-  --color-destructive-muted: #fee2e2;
-  --color-warning: #f59e0b;
-  --color-warning-muted: #fef3c7;
-  /* Text */
-  --color-text: #0f172a;
-  --color-text-muted: #64748b;
-  --color-text-subtle: #94a3b8;
+  --color-border: #e7d8da;
+  --color-border-focus: #c1121f;
+  --color-accent: #161616;
+  --color-accent-hover: #000000;
+  --color-accent-muted: #f1f1f1;
+  --color-destructive: #c1121f;
+  --color-destructive-muted: #ffe2e5;
+  --color-warning: #161616;
+  --color-warning-muted: #f1f1f1;
+  --color-text: #111111;
+  --color-text-muted: #5f5f65;
+  --color-text-subtle: #8e8e94;
 
-  /* Spacing & radius */
-  --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
-  --radius-2xl: 1.25rem;
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.08);
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+  --shadow-sm: 0 8px 24px rgb(17 17 17 / 0.05);
+  --shadow-md: 0 16px 36px rgb(17 17 17 / 0.08);
+  --shadow-lg: 0 24px 48px rgb(17 17 17 / 0.12);
+  --shadow-card: 0 14px 32px rgb(17 17 17 / 0.08);
 }
 
 * {
@@ -57,7 +49,9 @@ body {
   min-width: 320px;
   min-height: 100vh;
   color: var(--color-text);
-  background-color: var(--color-surface);
+  background:
+    radial-gradient(circle at top, rgba(193, 18, 31, 0.08), transparent 30%),
+    linear-gradient(180deg, #fffdfd 0%, var(--color-surface) 100%);
 }
 
 a {
@@ -80,7 +74,7 @@ a:hover {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .hover-lift:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
 }
 
@@ -89,3 +83,44 @@ a:hover {
   outline: none;
   box-shadow: 0 0 0 2px var(--color-surface-elevated), 0 0 0 4px var(--color-primary);
 }
+
+/* Global brand remap for existing utility-heavy pages */
+.bg-teal-700 { background-color: #111111 !important; }
+.bg-teal-600,
+.bg-teal-500,
+.bg-cyan-500,
+.bg-sky-500,
+.bg-emerald-500,
+.bg-violet-500,
+.bg-indigo-500 { background-color: var(--color-primary) !important; }
+.bg-teal-100,
+.bg-teal-50,
+.bg-emerald-50,
+.bg-amber-50 { background-color: #fff1f2 !important; }
+.text-teal-800,
+.text-teal-700,
+.text-teal-600,
+.text-teal-500,
+.text-emerald-800,
+.text-amber-800 { color: var(--color-primary) !important; }
+.text-teal-200,
+.text-teal-100 { color: #fecdd3 !important; }
+.border-teal-500,
+.border-teal-300,
+.border-teal-200,
+.border-emerald-200,
+.border-amber-200 { border-color: #f4b7bd !important; }
+.ring-teal-500\/20,
+.ring-teal-500\/30,
+.ring-teal-200 { --tw-ring-color: rgba(193, 18, 31, 0.18) !important; }
+.focus\:border-teal-500:focus,
+.focus\:border-teal-300:focus { border-color: var(--color-primary) !important; }
+.focus\:ring-teal-500\/30:focus,
+.focus\:ring-teal-200:focus { --tw-ring-color: rgba(193, 18, 31, 0.18) !important; }
+.hover\:bg-teal-700:hover,
+.hover\:bg-teal-100:hover,
+.hover\:bg-teal-50\/50:hover { background-color: #990f19 !important; }
+.hover\:text-teal-800:hover,
+.hover\:text-teal-700:hover,
+.hover\:text-teal-600:hover { color: #990f19 !important; }
+.hover\:border-teal-300:hover { border-color: var(--color-primary) !important; }

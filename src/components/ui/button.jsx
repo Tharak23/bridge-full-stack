@@ -6,11 +6,11 @@ const variantStyles = {
   destructive:
     'bg-[var(--color-destructive)] text-white hover:bg-red-600 shadow-sm active:scale-[0.98]',
   outline:
-    'border-2 border-[var(--color-border)] bg-white text-slate-700 hover:border-teal-300 hover:bg-teal-50/50 hover:text-teal-800 active:scale-[0.98]',
+    'border-2 border-[var(--color-border)] bg-white text-[var(--color-text)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary-muted)] hover:text-[var(--color-primary)] active:scale-[0.98]',
   secondary:
-    'bg-slate-100 text-slate-700 hover:bg-slate-200 active:scale-[0.98]',
+    'bg-black/[0.04] text-[var(--color-text)] hover:bg-black/[0.08] active:scale-[0.98]',
   ghost:
-    'text-slate-600 hover:bg-slate-100 hover:text-slate-900 active:scale-[0.98]',
+    'text-[var(--color-text-muted)] hover:bg-black/[0.05] hover:text-[var(--color-text)] active:scale-[0.98]',
   accent:
     'bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-hover)] shadow-sm hover:shadow-md active:scale-[0.98]',
   link:
@@ -20,10 +20,10 @@ const variantStyles = {
 export const Button = forwardRef(
   ({ className = '', variant = 'default', size = 'default', as: Comp = 'button', ...props }, ref) => {
     const sizeStyles = {
-      default: 'h-10 px-4 py-2 rounded-lg',
-      sm: 'h-9 rounded-lg px-3 text-sm',
-      lg: 'h-11 rounded-xl px-8 text-base',
-      icon: 'h-10 w-10 rounded-lg',
+      default: 'h-11 px-4 py-2 rounded-xl',
+      sm: 'h-10 rounded-xl px-3 text-sm',
+      lg: 'h-12 rounded-2xl px-8 text-base',
+      icon: 'h-11 w-11 rounded-xl',
     }
     return (
       <Comp

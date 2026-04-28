@@ -41,7 +41,7 @@ export default function RoleSelect() {
           <h3>Hire</h3>
           <p>Find services for your home, appliances, and repairs. Book verified professionals.</p>
         </div>
-        <div className="card-icon" style={{ background: '#ede9fe', color: '#7c3aed' }}>
+        <div className="card-icon" style={{ background: '#fff1f2', color: '#c1121f' }}>
           <User size={28} />
         </div>
       </motion.button>
@@ -58,7 +58,7 @@ export default function RoleSelect() {
           <h3>Service provider</h3>
           <p>Offer your professional services to customers. Grow your business with Bridge.</p>
         </div>
-        <div className="card-icon" style={{ background: '#dbeafe', color: '#2563eb' }}>
+        <div className="card-icon" style={{ background: '#111111', color: '#ffffff' }}>
           <Briefcase size={28} />
         </div>
       </motion.button>

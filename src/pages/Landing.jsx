@@ -31,27 +31,27 @@ import { useOnboardStatus } from '../hooks/useOnboardStatus'
 import './Landing.css'
 
 const navLinks = [
-  { id: 'services', label: 'Services' },
-  { id: 'how-it-works', label: 'How it works' },
-  { id: 'categories', label: 'Categories' },
-  { id: 'testimonials', label: 'Reviews' },
+  { id: 'services', label: 'Why Bridge' },
+  { id: 'how-it-works', label: 'Process' },
+  { id: 'categories', label: 'Service Areas' },
+  { id: 'testimonials', label: 'Proof' },
 ]
 
 const pillars = [
   {
     icon: <Home className="pillar-icon" />,
-    title: 'Professionals at your doorstep',
-    text: 'Skilled professionals for home, appliances, and repairs—book in a few taps.',
+    title: 'Single place for every household task',
+    text: 'From quick fixes to deep maintenance, request services in one guided flow.',
   },
   {
     icon: <Shield className="pillar-icon" />,
-    title: 'Verified professionals',
-    text: 'Background-checked, rated pros. Quality and safety built in from day one.',
+    title: 'Verified and reviewed professionals',
+    text: 'Profiles are vetted with ratings and service history so you can choose with confidence.',
   },
   {
     icon: <Zap className="pillar-icon" />,
-    title: 'Same-day & scheduled',
-    text: 'Instant help or book ahead. Flexible slots that fit your schedule.',
+    title: 'Fast scheduling and transparent pricing',
+    text: 'Get same-day options or pre-book appointments with clear rates shown upfront.',
   },
 ]
 
@@ -65,34 +65,34 @@ const categories = [
 ]
 
 const featuredServices = [
-  { name: 'Plumber consultation', rating: 4.73, price: '₹49', badge: 'Instant' },
-  { name: 'Electrician consultation', rating: 4.75, price: '₹49', badge: 'Instant' },
-  { name: 'Full home cleaning', rating: 4.8, price: '₹979', badge: null },
-  { name: 'AC service', rating: 4.77, price: '₹399', badge: null },
+  { name: 'Emergency plumbing support', rating: 4.73, price: '₹149', badge: 'Quick slot' },
+  { name: 'Electrical safety check', rating: 4.75, price: '₹199', badge: 'Top pick' },
+  { name: 'Complete home deep clean', rating: 4.8, price: '₹979', badge: null },
+  { name: 'Seasonal AC tune-up', rating: 4.77, price: '₹399', badge: null },
 ]
 
 const testimonials = [
   {
-    quote: 'Bridge made it so easy to get my AC fixed. The professional was on time and the pricing was transparent.',
+    quote: 'The new request flow made booking simple. I submitted once and got matched quickly.',
     author: 'Priya S.',
     role: 'Customer, Bangalore',
   },
   {
-    quote: 'From plumbing to electrical—one app for all home services. Highly recommend.',
+    quote: 'Bridge is now our default for home tasks because timelines, prices, and updates are clear.',
     author: 'Rahul M.',
     role: 'Customer, Hyderabad',
   },
 ]
 
 const footerProducts = [
-  { label: 'Home services', href: '#services' },
-  { label: 'Appliance repair', href: '#categories' },
-  { label: 'Salon & spa', href: '#categories' },
+  { label: 'Home services', href: '#categories' },
+  { label: 'Appliance care', href: '#categories' },
+  { label: 'Beauty and wellness', href: '#categories' },
 ]
 const footerCompany = [
-  { label: 'About us', href: '#' },
-  { label: 'Careers', href: '#' },
-  { label: 'Contact', href: '#' },
+  { label: 'About Bridge', href: '#' },
+  { label: 'Partner with us', href: '#' },
+  { label: 'Help center', href: '#' },
 ]
 const footerLegal = [
   { label: 'Terms of service', href: '/terms' },
@@ -128,35 +128,37 @@ export default function Landing() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <Link to="/" className="logo">Bridge</Link>
-        <nav className="nav-links">
-          {navLinks.map((link) => (
-            <button
-              key={link.id}
-              type="button"
-              className="nav-link"
-              onClick={() => scrollTo(link.id)}
-            >
-              {link.label} <ChevronDown className="nav-chevron" aria-hidden />
-            </button>
-          ))}
-        </nav>
-        <div className="header-actions">
-          <SignedOut>
-            <SignInButton mode="modal">
-              <button type="button" className="btn btn-ghost">Log in</button>
-            </SignInButton>
-            <SignUpButton mode="modal">
-              <button type="button" className="btn btn-primary">Sign up</button>
-            </SignUpButton>
-            <SignUpButton mode="modal">
-              <button type="button" className="btn btn-cta">Get started</button>
-            </SignUpButton>
-          </SignedOut>
-          <SignedIn>
-            <Link to={toDashboard} className="btn btn-cta">Dashboard</Link>
-            <UserButton afterSignOutUrl="/" />
-          </SignedIn>
+        <div className="header-brand-block">
+          <Link to="/" className="logo">Bridge</Link>
+          <p className="header-kicker">HOME SERVICES PLATFORM</p>
+        </div>
+        <div className="header-right-block">
+          <nav className="nav-links">
+            {navLinks.map((link) => (
+              <button
+                key={link.id}
+                type="button"
+                className="nav-link"
+                onClick={() => scrollTo(link.id)}
+              >
+                {link.label} <ChevronDown className="nav-chevron" aria-hidden />
+              </button>
+            ))}
+          </nav>
+          <div className="header-actions">
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button type="button" className="btn btn-ghost">Log in</button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <button type="button" className="btn btn-primary">Create account</button>
+              </SignUpButton>
+            </SignedOut>
+            <SignedIn>
+              <Link to={toDashboard} className="btn btn-cta">Open dashboard</Link>
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
+          </div>
         </div>
         <button
           type="button"
@@ -208,28 +210,40 @@ export default function Landing() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.4 }}
             >
-              Home services at your doorstep
+              BRIDGE - Request. Match. Done.
             </motion.div>
-            <h1 className="hero-title">Professional home & appliance services, one tap away</h1>
-            <p className="hero-subtitle">
-              From plumbing and electricals to AC repair, cleaning, and salon—book verified professionals at your convenience.
-            </p>
-            <motion.div
-              className="hero-cta"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-            >
-              <SignedIn>
-                <Link to={toDashboard} className="btn btn-hero">Dashboard</Link>
-              </SignedIn>
-              <SignedOut>
-                <SignUpButton mode="modal">
-                  <button type="button" className="btn btn-hero">Get started</button>
-                </SignUpButton>
-              </SignedOut>
-            </motion.div>
-            <p className="hero-tagline">India’s home services, simplified.</p>
+            <div className="hero-grid">
+              <div className="hero-copy">
+                <h1 className="hero-title">Redesigned service booking built for speed and clarity</h1>
+                <p className="hero-subtitle">
+                  Submit requirements, discover trusted professionals, and manage payments in a single streamlined workflow.
+                </p>
+                <motion.div
+                  className="hero-cta"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                >
+                  <SignedIn>
+                    <Link to={toDashboard} className="btn btn-hero">Go to dashboard</Link>
+                  </SignedIn>
+                  <SignedOut>
+                    <SignUpButton mode="modal">
+                      <button type="button" className="btn btn-hero">Start free</button>
+                    </SignUpButton>
+                  </SignedOut>
+                </motion.div>
+                <p className="hero-tagline">Built for households that want faster service decisions.</p>
+              </div>
+              <div className="hero-panel">
+                <h3>Today on Bridge</h3>
+                <ul>
+                  <li><strong>2 min</strong><span>Average request submission</span></li>
+                  <li><strong>50k+</strong><span>Completed household jobs</span></li>
+                  <li><strong>4.8/5</strong><span>Average booking experience</span></li>
+                </ul>
+              </div>
+            </div>
           </motion.div>
         </section>
 
@@ -251,7 +265,7 @@ export default function Landing() {
           >
             Trusted by thousands for home and appliance services
           </motion.p>
-          <div className="pillars-grid">
+          <div className="pillars-grid pillars-vertical">
             {pillars.map((item, i) => (
               <motion.div
                 key={item.title}
@@ -296,8 +310,8 @@ export default function Landing() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
               >
-                {cat.icon}
-                <span>{cat.label}</span>
+                <div className="category-card-top">{cat.icon}<span>{cat.label}</span></div>
+                <small>Explore services and pricing</small>
               </motion.button>
             ))}
           </motion.div>
@@ -345,8 +359,8 @@ export default function Landing() {
           >
             How it works
           </motion.h2>
-          <div className="steps">
-            {['Choose a service', 'Pick a slot', 'Pro at your door'].map((step, i) => (
+          <div className="steps steps-vertical">
+            {['Select category and request', 'Review professionals and offers', 'Confirm booking and track updates'].map((step, i) => (
               <motion.div
                 key={step}
                 className="step"
@@ -416,9 +430,9 @@ export default function Landing() {
             viewport={{ once: true }}
           >
             <h2 className="cta-strip-title">Ready to get started?</h2>
-            <p className="cta-strip-text">Book a service in minutes.</p>
+            <p className="cta-strip-text">Move from request to confirmation in one guided experience.</p>
             <SignUpButton mode="modal">
-              <button type="button" className="btn btn-hero">Get started now</button>
+              <button type="button" className="btn btn-hero">Create your Bridge account</button>
             </SignUpButton>
           </motion.div>
         </section>
@@ -429,7 +443,7 @@ export default function Landing() {
         <div className="footer-inner">
           <div className="footer-brand">
             <Link to="/" className="footer-logo">Bridge</Link>
-            <p>Home services at your doorstep.</p>
+            <p>Smarter home service operations, from request to payment.</p>
           </div>
           <div className="footer-links">
             <div className="footer-col">

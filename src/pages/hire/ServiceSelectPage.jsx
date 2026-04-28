@@ -32,32 +32,32 @@ export default function ServiceSelectPage() {
   const categoryName = (category || '').replace(/_/g, ' ')
 
   return (
-    <div className="container mx-auto px-4 py-10 max-w-6xl">
-      <nav className="text-sm text-slate-500 mb-6">
-        <Link to="/hiredashboard" className="hover:text-teal-600">Home</Link>
+    <div className="container mx-auto max-w-6xl px-4 py-8">
+      <nav className="mb-5 text-sm text-[var(--color-text-muted)]">
+        <Link to="/hiredashboard" className="hover:text-[var(--color-primary)]">Home</Link>
         <span className="mx-2">/</span>
-        <Link to={`/hiredashboard/services/${category}`} className="hover:text-teal-600 capitalize">{categoryName}</Link>
+        <Link to={`/hiredashboard/services/${category}`} className="capitalize hover:text-[var(--color-primary)]">{categoryName}</Link>
         <span className="mx-2">/</span>
-        <span className="text-slate-700">{service.name}</span>
+        <span className="text-[var(--color-text)]">{service.name}</span>
       </nav>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="lg:col-span-2 space-y-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
-            You will get {service.name}
+          <h1 className="text-3xl font-black text-[var(--color-text)] md:text-4xl">
+            {service.name}
           </h1>
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-slate-300 flex items-center justify-center text-slate-600 font-semibold">
+          <div className="flex items-center gap-3 rounded-[1.5rem] border border-[var(--color-border)] bg-white p-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-primary-muted)] font-semibold text-[var(--color-primary)]">
               {DUMMY_PROVIDER.name.charAt(0)}
             </div>
             <div>
-              <p className="font-semibold text-slate-900">{DUMMY_PROVIDER.name}</p>
-              <p className="text-sm text-slate-500 flex items-center gap-1">
+              <p className="font-semibold text-[var(--color-text)]">{DUMMY_PROVIDER.name}</p>
+              <p className="flex items-center gap-1 text-sm text-[var(--color-text-muted)]">
                 <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                 {DUMMY_PROVIDER.rating} ({DUMMY_PROVIDER.reviews} reviews)
               </p>
               {DUMMY_PROVIDER.badge && (
-                <span className="inline-block mt-1 text-xs font-medium bg-amber-100 text-amber-800 px-2 py-0.5 rounded">
+                    <span className="mt-1 inline-block rounded-full bg-[var(--color-primary-muted)] px-2.5 py-0.5 text-xs font-semibold text-[var(--color-primary)]">
                   {DUMMY_PROVIDER.badge}
                 </span>
               )}
@@ -71,7 +71,7 @@ export default function ServiceSelectPage() {
               <MessageCircle className="h-4 w-4 mr-2" /> Message
             </Button>
           </div>
-          <div className="w-full h-48 rounded-xl overflow-hidden bg-slate-200">
+          <div className="h-56 w-full overflow-hidden rounded-[1.5rem] border border-[var(--color-border)] bg-slate-200">
             <img
               src={`https://picsum.photos/seed/${category}-${service.slug}/640/192`}
               alt=""
@@ -79,12 +79,12 @@ export default function ServiceSelectPage() {
             />
           </div>
 
-          <Card className="overflow-hidden">
+          <Card className="overflow-hidden border border-[var(--color-border)]">
             <div className="p-6">
-              <h2 className="font-bold text-slate-900 mb-3">What&apos;s included</h2>
-              <ul className="space-y-2 text-sm text-slate-600">
+              <h2 className="mb-3 text-lg font-black text-[var(--color-text)]">What&apos;s included</h2>
+              <ul className="space-y-2 text-sm text-[var(--color-text-muted)]">
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-teal-500 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-primary)]" />
                   Inspection and diagnosis at your location
                 </li>
                 <li className="flex items-start gap-2">
@@ -103,31 +103,31 @@ export default function ServiceSelectPage() {
             </div>
           </Card>
 
-          <Card className="overflow-hidden">
+          <Card className="overflow-hidden border border-[var(--color-border)]">
             <div className="p-6">
-              <h2 className="font-bold text-slate-900 mb-3">Cancellation policy</h2>
-              <p className="text-sm text-slate-600 leading-relaxed">
+              <h2 className="mb-3 text-lg font-black text-[var(--color-text)]">Cancellation policy</h2>
+              <p className="text-sm leading-relaxed text-[var(--color-text-muted)]">
                 Free cancellation up to 2 hours before the scheduled time. Later cancellations may incur a fee. Reschedule anytime from My Bookings.
               </p>
             </div>
           </Card>
 
           {related.length > 0 && (
-            <Card className="overflow-hidden">
+            <Card className="overflow-hidden border border-[var(--color-border)]">
               <div className="p-6">
-                <h2 className="font-bold text-slate-900 mb-3">Related services</h2>
-                <div className="flex flex-wrap gap-2">
+                <h2 className="mb-3 text-lg font-black text-[var(--color-text)]">Related services</h2>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {related.map((opt) => (
                     <Link
                       key={opt.slug}
                       to={`/hiredashboard/services/${category}/select/${opt.slug}`}
-                      className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:border-teal-300 hover:bg-teal-50/50 hover:text-teal-800 transition-colors"
+                      className="inline-flex items-center rounded-xl border border-[var(--color-border)] bg-[#fff8f8] px-4 py-2 text-sm font-medium text-[var(--color-text)] transition-colors hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
                     >
                       {opt.name} — ₹{opt.price}
                     </Link>
                   ))}
                 </div>
-                <Link to={`/hiredashboard/services/${category}`} className="inline-block mt-3 text-sm text-teal-600 hover:text-teal-700 font-medium">
+                <Link to={`/hiredashboard/services/${category}`} className="mt-3 inline-block text-sm font-medium text-[var(--color-primary)] hover:text-[var(--color-primary-hover)]">
                   View all {categoryName} services →
                 </Link>
               </div>
@@ -136,15 +136,15 @@ export default function ServiceSelectPage() {
         </div>
 
         <div className="lg:col-span-1">
-          <Card className="overflow-hidden sticky top-24 shadow-md">
+          <Card className="sticky top-20 overflow-hidden border border-[var(--color-border)] shadow-md">
             <div className="p-6">
-              <h2 className="font-bold text-slate-900 mb-4">Select service tier</h2>
+              <h2 className="mb-4 text-lg font-black text-[var(--color-text)]">Select service tier</h2>
               <div className="space-y-2 mb-4">
                 {SERVICE_TIERS.map((tier) => (
                   <label
                     key={tier.id}
-                    className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-colors ${
-                      selectedTier.id === tier.id ? 'border-teal-500 bg-teal-50' : 'border-slate-200 hover:border-slate-300'
+                    className={`flex cursor-pointer items-center justify-between rounded-xl border-2 p-3 transition-colors ${
+                      selectedTier.id === tier.id ? 'border-[var(--color-primary)] bg-[var(--color-primary-muted)]' : 'border-[var(--color-border)] hover:border-[var(--color-primary)]'
                     }`}
                   >
                     <input
@@ -155,57 +155,57 @@ export default function ServiceSelectPage() {
                       onChange={() => setSelectedTier(tier)}
                       className="sr-only"
                     />
-                    <span className="font-medium text-slate-900">{tier.name}</span>
-                    <span className="font-bold text-teal-600">₹{tier.price}</span>
+                    <span className="font-medium text-[var(--color-text)]">{tier.name}</span>
+                    <span className="font-bold text-[var(--color-primary)]">₹{tier.price}</span>
                   </label>
                 ))}
               </div>
               <button
                 type="button"
-                className="text-sm text-teal-600 hover:text-teal-700 font-medium flex items-center gap-1 mb-4"
+                className="mb-4 flex items-center gap-1 text-sm font-medium text-[var(--color-primary)] hover:text-[var(--color-primary-hover)]"
                 onClick={() => setShowCompareTiers((v) => !v)}
               >
                 {showCompareTiers ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                 Compare tiers
               </button>
               {showCompareTiers && (
-                <div className="mb-4 rounded-lg border border-slate-200 overflow-hidden text-sm">
+                <div className="mb-4 overflow-hidden rounded-xl border border-[var(--color-border)] text-sm">
                   <table className="w-full">
                     <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200">
-                        <th className="text-left p-2 font-medium text-slate-700">Tier</th>
-                        <th className="text-left p-2 font-medium text-slate-700">Price</th>
-                        <th className="text-left p-2 font-medium text-slate-700">Delivery</th>
-                        <th className="text-left p-2 font-medium text-slate-700">Revisions</th>
+                      <tr className="border-b border-[var(--color-border)] bg-[#fff8f8]">
+                        <th className="p-2 text-left font-medium text-[var(--color-text-muted)]">Tier</th>
+                        <th className="p-2 text-left font-medium text-[var(--color-text-muted)]">Price</th>
+                        <th className="p-2 text-left font-medium text-[var(--color-text-muted)]">Delivery</th>
+                        <th className="p-2 text-left font-medium text-[var(--color-text-muted)]">Revisions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {SERVICE_TIERS.map((t) => (
-                        <tr key={t.id} className="border-b border-slate-100 last:border-0">
-                          <td className="p-2 text-slate-900">{t.name}</td>
-                          <td className="p-2 text-teal-600 font-medium">₹{t.price}</td>
-                          <td className="p-2 text-slate-600">{t.deliveryDays} day</td>
-                          <td className="p-2 text-slate-600">{t.revisions}</td>
+                        <tr key={t.id} className="border-b border-[#f3e4e6] last:border-0">
+                          <td className="p-2 text-[var(--color-text)]">{t.name}</td>
+                          <td className="p-2 font-medium text-[var(--color-primary)]">₹{t.price}</td>
+                          <td className="p-2 text-[var(--color-text-muted)]">{t.deliveryDays} day</td>
+                          <td className="p-2 text-[var(--color-text-muted)]">{t.revisions}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
               )}
-              <dl className="space-y-2 text-sm border-t border-slate-200 pt-4 mb-4">
+              <dl className="mb-4 space-y-2 border-t border-[var(--color-border)] pt-4 text-sm">
                 <div className="flex justify-between">
-                  <dt className="text-slate-500">Delivery time</dt>
-                  <dd className="text-slate-900 font-medium">{selectedTier.deliveryDays} day</dd>
+                  <dt className="text-[var(--color-text-muted)]">Delivery time</dt>
+                  <dd className="font-medium text-[var(--color-text)]">{selectedTier.deliveryDays} day</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-slate-500">Revisions</dt>
-                  <dd className="text-slate-900 font-medium">{selectedTier.revisions}</dd>
+                  <dt className="text-[var(--color-text-muted)]">Revisions</dt>
+                  <dd className="font-medium text-[var(--color-text)]">{selectedTier.revisions}</dd>
                 </div>
               </dl>
-              <p className="text-xs text-slate-500 mb-4 flex items-center gap-1">
-                <span className="inline-block w-4 h-4 rounded bg-slate-200" /> Delivery by next working day
+              <p className="mb-4 flex items-center gap-1 text-xs text-[var(--color-text-muted)]">
+                <span className="inline-block h-4 w-4 rounded bg-[var(--color-primary-muted)]" /> Delivery by next working day
               </p>
-              <Button className="w-full rounded-lg h-11 mb-2" onClick={handleContinue}>
+              <Button className="mb-2 h-12 w-full rounded-xl" onClick={handleContinue}>
                 Continue (₹{selectedTier.price})
               </Button>
               <Button

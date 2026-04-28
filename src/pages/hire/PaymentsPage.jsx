@@ -65,54 +65,54 @@ export default function PaymentsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-10 max-w-4xl">
-      <h1 className="text-2xl font-bold text-slate-900 mb-1">Payments</h1>
-      <p className="text-slate-500 mb-8">Payment history and methods</p>
+    <div className="container mx-auto max-w-5xl px-4 py-8">
+      <h1 className="mb-1 text-3xl font-black text-[var(--color-text)]">Payments</h1>
+      <p className="mb-8 text-[var(--color-text-muted)]">Payment history and methods</p>
       {highlightBookingId && (
-        <p className="mb-4 text-sm text-teal-600 font-medium">Showing payment for your selected booking.</p>
+        <p className="mb-4 text-sm font-medium text-[var(--color-primary)]">Showing payment for your selected booking.</p>
       )}
 
       {payments.length === 0 ? (
         <Card className="p-10 text-center">
-          <p className="text-slate-500">No payments yet. Once a booking is paid, it will appear here.</p>
+          <p className="text-[var(--color-text-muted)]">No payments yet. Once a booking is paid, it will appear here.</p>
         </Card>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-[2rem] border border-[var(--color-border)] bg-white shadow-[var(--shadow-lg)]">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-slate-200 bg-slate-50">
-                  <th className="px-5 py-3 font-semibold text-slate-700">Service</th>
-                  <th className="px-5 py-3 font-semibold text-slate-700">Date</th>
-                  <th className="px-5 py-3 font-semibold text-slate-700 text-right">Amount</th>
-                  <th className="px-5 py-3 font-semibold text-slate-700">Status</th>
+                <tr className="border-b border-[var(--color-border)] bg-[#111111]">
+                  <th className="px-5 py-4 font-semibold uppercase tracking-[0.12em] text-white/80">Service</th>
+                  <th className="px-5 py-4 font-semibold uppercase tracking-[0.12em] text-white/80">Date</th>
+                  <th className="px-5 py-4 text-right font-semibold uppercase tracking-[0.12em] text-white/80">Amount</th>
+                  <th className="px-5 py-4 font-semibold uppercase tracking-[0.12em] text-white/80">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {payments.map((p) => (
                   <tr
                     key={p.id}
-                    className={`border-b border-slate-100 last:border-0 hover:bg-slate-50/50 ${
-                      p.bookingId === highlightBookingId ? 'bg-teal-50/80' : ''
+                    className={`border-b border-[#f3e4e6] last:border-0 hover:bg-[#fff7f8] ${
+                      p.bookingId === highlightBookingId ? 'bg-[#fff1f2]' : ''
                     }`}
                   >
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+                        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--color-primary-muted)] text-[var(--color-primary)]">
                           <CreditCard className="h-5 w-5" />
                         </span>
                         <div>
-                          <p className="font-medium text-slate-900">{p.serviceName}</p>
-                          <p className="text-xs text-slate-500">{p.location}</p>
+                          <p className="font-medium text-[var(--color-text)]">{p.serviceName}</p>
+                          <p className="text-xs text-[var(--color-text-muted)]">{p.location}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-5 py-4 text-slate-600">{p.date}</td>
-                    <td className="px-5 py-4 text-right font-semibold text-slate-900">₹{p.amount}</td>
+                    <td className="px-5 py-4 text-[var(--color-text-muted)]">{p.date}</td>
+                    <td className="px-5 py-4 text-right font-semibold text-[var(--color-text)]">₹{p.amount}</td>
                     <td className="px-5 py-4">
                       <span
-                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                          p.status === 'Paid' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                        className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
+                          p.status === 'Paid' ? 'bg-[var(--color-primary-muted)] text-[var(--color-primary)]' : 'bg-black/[0.06] text-[var(--color-text)]'
                         }`}
                       >
                         {p.status}
@@ -126,30 +126,38 @@ export default function PaymentsPage() {
         </div>
       )}
 
-      <Card className="mt-6 overflow-hidden">
+      <Card className="mt-6 overflow-hidden rounded-[1.75rem] border border-[var(--color-border)]">
         <div className="p-5 flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-teal-100 text-teal-600">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--color-primary-muted)] text-[var(--color-primary)]">
             <IndianRupee className="h-6 w-6" />
           </div>
           <div>
-            <p className="font-medium text-slate-900">Pay after service</p>
-            <p className="text-sm text-slate-500">Add a payment method at checkout when you book. You are charged after the professional completes the job.</p>
+            <p className="font-medium text-[var(--color-text)]">Pay after service</p>
+            <p className="text-sm text-[var(--color-text-muted)]">Add a payment method at checkout when you book. You are charged after the professional completes the job.</p>
           </div>
         </div>
       </Card>
 
-      <Card className="mt-6 overflow-hidden">
+      <Card className="mt-6 overflow-hidden rounded-[1.75rem] border border-[var(--color-border)] shadow-[var(--shadow-lg)]">
         <div className="p-5">
-          <h2 className="text-lg font-semibold text-slate-900">Cash on Delivery (COD) tracker</h2>
-          <p className="text-sm text-slate-500 mt-1 mb-4">Add COD amount and track whether the service payment was received.</p>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--color-primary)]">Payment tracker</p>
+              <h2 className="text-xl font-black text-[var(--color-text)]">Cash on Delivery (COD) tracker</h2>
+            </div>
+            <span className="rounded-full border border-[var(--color-border)] bg-[#111111] px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white/80">
+              Form refreshed
+            </span>
+          </div>
+          <p className="mb-5 mt-1 text-sm text-[var(--color-text-muted)]">Add COD amount and track whether the service payment was received.</p>
 
-          <form className="grid grid-cols-1 md:grid-cols-4 gap-3" onSubmit={handleAddCodPayment}>
+          <form className="grid grid-cols-1 gap-3 rounded-[1.5rem] border border-[var(--color-border)] bg-[#fff8f8] p-4 md:grid-cols-2 lg:grid-cols-4" onSubmit={handleAddCodPayment}>
             <input
               type="text"
               value={codForm.serviceName}
               onChange={(e) => setCodForm((prev) => ({ ...prev, serviceName: e.target.value }))}
               placeholder="Service name"
-              className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-200"
+              className="rounded-xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[rgba(193,18,31,0.14)]"
               required
             />
             <input
@@ -159,46 +167,46 @@ export default function PaymentsPage() {
               value={codForm.amount}
               onChange={(e) => setCodForm((prev) => ({ ...prev, amount: e.target.value }))}
               placeholder="Amount"
-              className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-200"
+              className="rounded-xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[rgba(193,18,31,0.14)]"
               required
             />
             <select
               value={codForm.status}
               onChange={(e) => setCodForm((prev) => ({ ...prev, status: e.target.value }))}
-              className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-200"
+              className="rounded-xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[rgba(193,18,31,0.14)]"
             >
               <option>Not received</option>
               <option>Received</option>
             </select>
-            <button type="submit" className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700">
+            <button type="submit" className="rounded-xl bg-[var(--color-primary)] px-4 py-3 text-sm font-medium text-white hover:bg-[var(--color-primary-hover)]">
               Add COD
             </button>
           </form>
 
           {codPayments.length === 0 ? (
-            <p className="text-sm text-slate-500 mt-4">No COD entries yet.</p>
+            <p className="mt-4 text-sm text-[var(--color-text-muted)]">No COD entries yet.</p>
           ) : (
             <div className="mt-4 overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200">
-                    <th className="px-2 py-2 font-semibold text-slate-700">Service</th>
-                    <th className="px-2 py-2 font-semibold text-slate-700">Date</th>
-                    <th className="px-2 py-2 font-semibold text-slate-700 text-right">COD Amount</th>
-                    <th className="px-2 py-2 font-semibold text-slate-700">Status</th>
-                    <th className="px-2 py-2 font-semibold text-slate-700">Action</th>
+                  <tr className="border-b border-[var(--color-border)]">
+                    <th className="px-2 py-2 font-semibold text-[var(--color-text-muted)]">Service</th>
+                    <th className="px-2 py-2 font-semibold text-[var(--color-text-muted)]">Date</th>
+                    <th className="px-2 py-2 text-right font-semibold text-[var(--color-text-muted)]">COD Amount</th>
+                    <th className="px-2 py-2 font-semibold text-[var(--color-text-muted)]">Status</th>
+                    <th className="px-2 py-2 font-semibold text-[var(--color-text-muted)]">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {codPayments.map((item) => (
-                    <tr key={item.id} className="border-b border-slate-100 last:border-0">
-                      <td className="px-2 py-3 text-slate-800">{item.serviceName}</td>
-                      <td className="px-2 py-3 text-slate-600">{item.date}</td>
-                      <td className="px-2 py-3 text-right font-semibold text-slate-900">₹{item.amount}</td>
+                    <tr key={item.id} className="border-b border-[#f3e4e6] last:border-0">
+                      <td className="px-2 py-3 text-[var(--color-text)]">{item.serviceName}</td>
+                      <td className="px-2 py-3 text-[var(--color-text-muted)]">{item.date}</td>
+                      <td className="px-2 py-3 text-right font-semibold text-[var(--color-text)]">₹{item.amount}</td>
                       <td className="px-2 py-3">
                         <span
-                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                            item.status === 'Received' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                          className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
+                            item.status === 'Received' ? 'bg-[var(--color-primary-muted)] text-[var(--color-primary)]' : 'bg-black/[0.06] text-[var(--color-text)]'
                           }`}
                         >
                           {item.status}
@@ -207,7 +215,7 @@ export default function PaymentsPage() {
                       <td className="px-2 py-3">
                         <button
                           type="button"
-                          className="text-xs font-medium text-teal-700 hover:text-teal-800"
+                          className="text-xs font-medium text-[var(--color-primary)] hover:text-[var(--color-primary-hover)]"
                           onClick={() => toggleCodStatus(item.id)}
                         >
                           Mark as {item.status === 'Received' ? 'Not received' : 'Received'}

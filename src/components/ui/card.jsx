@@ -1,7 +1,7 @@
 export function Card({ className = '', hover, ...props }) {
   return (
     <div
-      className={`rounded-xl border border-slate-200/80 bg-white text-slate-900 shadow-[var(--shadow-card)] transition-all duration-200 ${hover ? 'hover-lift' : ''} ${className}`}
+      className={`rounded-[1.5rem] border border-[var(--color-border)] bg-white text-[var(--color-text)] shadow-[var(--shadow-card)] transition-all duration-200 ${hover ? 'hover-lift' : ''} ${className}`}
       {...props}
     />
   )
@@ -14,14 +14,14 @@ export function CardHeader({ className = '', ...props }) {
 export function CardTitle({ className = '', ...props }) {
   return (
     <div
-      className={`text-xl font-semibold leading-tight tracking-tight text-slate-900 ${className}`}
+      className={`text-xl font-semibold leading-tight tracking-tight text-[var(--color-text)] ${className}`}
       {...props}
     />
   )
 }
 
 export function CardDescription({ className = '', ...props }) {
-  return <p className={`text-sm text-slate-500 ${className}`} {...props} />
+  return <p className={`text-sm text-[var(--color-text-muted)] ${className}`} {...props} />
 }
 
 export function CardContent({ className = '', ...props }) {

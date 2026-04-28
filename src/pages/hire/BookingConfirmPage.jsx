@@ -67,82 +67,82 @@ export default function BookingConfirmPage() {
   const total = draft.total ?? draft.tier?.price ?? 0
 
   return (
-    <div className="container mx-auto px-4 py-10 max-w-4xl">
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">Review and book</h1>
+    <div className="container mx-auto max-w-5xl px-4 py-8">
+      <h1 className="mb-6 text-3xl font-black text-[var(--color-text)]">Review and book</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <Card className="overflow-hidden">
+          <Card className="overflow-hidden border border-[var(--color-border)]">
             <div className="p-6">
-              <h2 className="font-bold text-slate-900 mb-4">{draft.serviceName}</h2>
+              <h2 className="mb-4 text-xl font-black text-[var(--color-text)]">{draft.serviceName}</h2>
               <dl className="grid grid-cols-2 gap-3 text-sm">
-                <dt className="text-slate-500">Tier</dt>
-                <dd className="text-slate-900 font-medium">{draft.tier?.name}</dd>
-                <dt className="text-slate-500">Delivery</dt>
-                <dd className="text-slate-900 font-medium">{draft.tier?.deliveryDays} day</dd>
+                <dt className="text-[var(--color-text-muted)]">Tier</dt>
+                <dd className="font-medium text-[var(--color-text)]">{draft.tier?.name}</dd>
+                <dt className="text-[var(--color-text-muted)]">Delivery</dt>
+                <dd className="font-medium text-[var(--color-text)]">{draft.tier?.deliveryDays} day</dd>
                 {draft.serviceDate && (
                   <>
-                    <dt className="text-slate-500">Service date</dt>
-                    <dd className="text-slate-900 font-medium">{new Date(draft.serviceDate).toLocaleDateString()}</dd>
-                    <dt className="text-slate-500">Time slot</dt>
-                    <dd className="text-slate-900 font-medium">{draft.timeSlotLabel ?? '—'}</dd>
+                    <dt className="text-[var(--color-text-muted)]">Service date</dt>
+                    <dd className="font-medium text-[var(--color-text)]">{new Date(draft.serviceDate).toLocaleDateString()}</dd>
+                    <dt className="text-[var(--color-text-muted)]">Time slot</dt>
+                    <dd className="font-medium text-[var(--color-text)]">{draft.timeSlotLabel ?? '—'}</dd>
                   </>
                 )}
-                <dt className="text-slate-500">Visits</dt>
-                <dd className="text-slate-900 font-medium">{draft.visits ?? 1}</dd>
+                <dt className="text-[var(--color-text-muted)]">Visits</dt>
+                <dd className="font-medium text-[var(--color-text)]">{draft.visits ?? 1}</dd>
               </dl>
             </div>
           </Card>
 
-          <Card className="overflow-hidden">
+          <Card className="overflow-hidden border border-[var(--color-border)]">
             <div className="p-6">
-              <h2 className="font-bold text-slate-900 mb-3">Professional</h2>
+              <h2 className="mb-3 text-lg font-black text-[var(--color-text)]">Professional</h2>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-semibold">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-primary-muted)] font-semibold text-[var(--color-primary)]">
                   {provider.name?.charAt(0) || 'P'}
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-900">{provider.name}</p>
-                  <p className="text-sm text-slate-500 flex items-center gap-1">
+                  <p className="font-semibold text-[var(--color-text)]">{provider.name}</p>
+                  <p className="flex items-center gap-1 text-sm text-[var(--color-text-muted)]">
                     <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                     {provider.rating} ({provider.reviews} reviews)
                   </p>
                   {provider.badge && (
-                    <span className="inline-block mt-1 text-xs font-medium bg-amber-100 text-amber-800 px-2 py-0.5 rounded">
+                    <span className="mt-1 inline-block rounded-full bg-[var(--color-primary-muted)] px-2 py-0.5 text-xs font-medium text-[var(--color-primary)]">
                       {provider.badge}
                     </span>
                   )}
                 </div>
               </div>
-              <p className="text-sm text-slate-500">
-                <strong className="text-slate-700">3 professionals available</strong> for this service in your area. We&apos;ll assign the best match after you confirm.
+              <p className="text-sm text-[var(--color-text-muted)]">
+                <strong className="text-[var(--color-text)]">3 professionals available</strong> for this service in your area. We&apos;ll assign the best match after you confirm.
               </p>
             </div>
           </Card>
 
-          <Card className="overflow-hidden">
+          <Card className="overflow-hidden border border-[var(--color-border)]">
             <div className="p-6">
-              <h2 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <h2 className="mb-4 flex items-center gap-2 font-bold text-[var(--color-text)]">
                 <span className="text-2xl">4.96</span>
                 <span className="text-amber-500 flex">★★★★★</span>
               </h2>
-              <p className="font-semibold text-slate-900 mb-1">Guest favorite</p>
-              <p className="text-sm text-slate-500 mb-4">
+              <p className="mb-1 font-semibold text-[var(--color-text)]">Guest favorite</p>
+              <p className="mb-4 text-sm text-[var(--color-text-muted)]">
                 This service is in the top 5% of listings based on ratings, reviews, and reliability.
               </p>
               <div className="space-y-3">
                 {DUMMY_REVIEWS.map((r, i) => (
-                  <div key={i} className="border-t border-slate-100 pt-3">
+                  <div key={i} className="border-t border-[#f3e4e6] pt-3">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium text-slate-900">{r.author}</span>
+                      <span className="font-medium text-[var(--color-text)]">{r.author}</span>
                       <span className="flex items-center gap-0.5 text-amber-500">
                         {Array.from({ length: r.rating }).map((_, j) => (
                           <Star key={j} className="h-4 w-4 fill-amber-400" />
                         ))}
                       </span>
-                      <span className="text-xs text-slate-400">{r.date}</span>
+                      <span className="text-xs text-[var(--color-text-subtle)]">{r.date}</span>
                     </div>
-                    <p className="text-sm text-slate-600">{r.text}</p>
+                    <p className="text-sm text-[var(--color-text-muted)]">{r.text}</p>
                   </div>
                 ))}
               </div>
@@ -151,17 +151,17 @@ export default function BookingConfirmPage() {
         </div>
 
         <div>
-          <Card className="sticky top-24 overflow-hidden shadow-lg">
+          <Card className="sticky top-20 overflow-hidden border border-[var(--color-border)] shadow-lg">
             <div className="p-6">
               <div className="flex items-baseline gap-2 mb-4">
-                <span className="text-2xl font-bold text-slate-900">₹{total}</span>
-                <span className="text-slate-500 text-sm">total</span>
+                <span className="text-3xl font-black text-[var(--color-text)]">₹{total}</span>
+                <span className="text-sm text-[var(--color-text-muted)]">total</span>
               </div>
-              <Button className="w-full rounded-xl h-12 mb-4" onClick={handleConfirm}>
+              <Button className="mb-4 h-12 w-full rounded-xl" onClick={handleConfirm}>
                 Confirm booking
               </Button>
-              <div className="flex items-start gap-2 text-sm text-slate-500">
-                <Shield className="h-5 w-5 text-teal-500 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2 text-sm text-[var(--color-text-muted)]">
+                <Shield className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-primary)]" />
                 <p>Payment is secure. You pay after the professional completes the job to your satisfaction.</p>
               </div>
             </div>
